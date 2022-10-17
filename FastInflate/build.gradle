@@ -1,0 +1,35 @@
+plugins {
+    id 'kotlin'
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+    id 'groovy'
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.dreamgyf.android.plugin'
+            artifactId = 'FastInflate'
+            version = '0.1'
+            from components.java
+        }
+    }
+}
+
+gradlePlugin {
+    plugins {
+        fastInflate {
+            id = 'android-fastinflate'
+            implementationClass = 'com.dreamgyf.android.plugin.fastinflate.FastInflate'
+            version '0.1'
+        }
+    }
+}
+
+dependencies {
+    //Groovy DSL
+    implementation gradleApi()
+    //Gradle DSL
+    implementation localGroovy()
+    implementation 'com.android.tools.build:gradle:7.3.0'
+}
