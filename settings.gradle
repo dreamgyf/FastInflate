@@ -16,4 +16,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "FastInflate"
 include ':app'
+include ':FastInflatePlugin'
 include ':FastInflate'

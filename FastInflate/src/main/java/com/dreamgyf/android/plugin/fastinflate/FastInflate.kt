@@ -1,48 +1,38 @@
 package com.dreamgyf.android.plugin.fastinflate
 
-import groovy.xml.XmlParser
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import java.io.File
+import android.content.Context
+import android.util.Log
+import android.view.ViewGroup
+import androidx.annotation.LayoutRes
 
+class FastInflate private constructor(private val appContext: Context) {
 
-class FastInflate : Plugin<Project> {
+    fun inflate(
+        @LayoutRes resource: Int,
+        root: ViewGroup?,
+        attachToRoot: Boolean = (root != null)
+    ) {
+        val layoutName = appContext.resources.getResourceEntryName(resource)
 
-    private val xmlParser by lazy {
-        XmlParser()
+        try {
+            val clz = Class.forName("com.dreamgyf.android.plugin.fastinflate.generate.FastInflate_Layout_$layoutName")
+            val instance = clz.getConstructor().newInstance()
+            val inflateMethod = clz.getMethod("inflate")
+            inflateMethod.invoke(instance)
+        } catch (t: Throwable) {
+            Log.e("FastInflate", t.message ?: "")
+        }
     }
 
-    override fun apply(project: Project) {
-        println("apply plugin FastInflate for project ${project.name}")
+    companion object {
 
-        val projectPath = project.projectDir.absolutePath
+        var instance: FastInflate? = null
 
-        project.tasks.all { task ->
-            val taskName = task.name
-            if ("package.+Resources".toRegex().containsMatchIn(taskName)) {
-                task.doLast {
-                    val flavor = taskName.replace("package", "")
-                        .replace("Resources", "")
-                        .replaceFirstChar { it.lowercase() }
-
-                    val packagedResPath = "${projectPath}/build/intermediates/packaged_res/$flavor"
-                    println(packagedResPath)
-
-                    val layoutPath = "$packagedResPath/layout"
-                    val layoutDir = File(layoutPath)
-
-                    if (!layoutDir.exists() || !layoutDir.isDirectory) {
-                        return@doLast
-                    }
-
-                    layoutDir.forEachFiles {
-                        println(it.name)
-
-                        val node = xmlParser.parse(it)
-                        println(node.name().toString())
-                    }
-                }
+        fun from(context: Context): FastInflate {
+            if (instance == null) {
+                instance = FastInflate(context.applicationContext)
             }
+            return instance!!
         }
     }
 }
