@@ -43,5 +43,5 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-    implementation 'com.dreamgyf.android.plugin:FastInflatePlugin:0.1'
+    implementation 'com.dreamgyf.android.plugin:FastInflate:0.1'
 }

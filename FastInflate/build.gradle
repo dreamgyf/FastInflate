@@ -40,7 +40,7 @@ publishing {
     publications {
         release(MavenPublication) {
             groupId = 'com.dreamgyf.android.plugin'
-            artifactId = 'FastInflatePlugin'
+            artifactId = 'FastInflate'
             version = '0.1'
 
             def artifactOutputPath = "$buildDir/outputs/aar/${project.getName()}-release.aar"
