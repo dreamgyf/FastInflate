@@ -70,7 +70,7 @@ object FastInflateLayoutGenerator {
                 .addStatement("if (!attachToRoot) {")
                 .addStatement("temp.layoutParams = params")
                 .addStatement("}}")
-                .addStatement("inflateChildren(temp, context, attrs)")
+                .addStatement("inflateChildren(parser, temp, context, attrs)")
                 .addStatement("if (root != null && attachToRoot) { root.addView(temp, params) }")
                 .addStatement("if (root == null || !attachToRoot) { result = temp }")
                 .addStatement("return result!!")
@@ -106,6 +106,15 @@ object FastInflateLayoutGenerator {
                         .addModifiers(KModifier.PRIVATE)
                         .build()
                 )
+                .addProperty(
+                    PropertySpec.builder("ATTRS_THEME", intArrayClz)
+                        .initializer(
+                            "intArrayOf(%T.getResId(\"theme\", \"attr\", \"android\"))",
+                            helperClz
+                        )
+                        .addModifiers(KModifier.PRIVATE)
+                        .build()
+                )
                 .addFunction(inflateFunBuilder.build())
                 .addFunction(genInflateChildrenFunc(root))
                 .addFunctions(rGenerateFuncList)
@@ -116,6 +125,7 @@ object FastInflateLayoutGenerator {
 
     private fun genInflateChildrenFunc(root: Node): FunSpec {
         val funSpecBuilder = FunSpec.builder("inflateChildren")
+            .addParameter("parser", xmlPullParserClz)
             .addParameter("parent", viewClz)
             .addParameter("context", contextClz)
             .addParameter("attrs", attributeSetClz)
@@ -127,7 +137,8 @@ object FastInflateLayoutGenerator {
 
         children.forEachIndexed { index, node ->
             (node as? Node)?.let {
-                rGenerate(funSpecBuilder, it, 1, index)
+                val funcName = rGenerate("", it, index)
+                funSpecBuilder.addStatement("$funcName(parser, parent, context, attrs)")
             }
         }
 
@@ -135,18 +146,20 @@ object FastInflateLayoutGenerator {
     }
 
     private fun rGenerate(
-        parentFunSpecBuilder: FunSpec.Builder,
+        funcPrefix: String,
         node: Node,
-        depth: Int,
         index: Int
-    ) {
-        val funcName = "rInflate_depth_${depth}_${index}"
-        parentFunSpecBuilder.addStatement("$funcName(parent, context, attrs)")
+    ): String {
+        val funcName = "rInflate_${funcPrefix}_${index}"
+        val childFuncPrefix = "${funcPrefix}_${index}"
 
         val funSpecBuilder = FunSpec.builder(funcName)
+            .addParameter("parser", xmlPullParserClz)
             .addParameter("parent", viewClz)
             .addParameter("context", contextClz)
             .addParameter("attrs", attributeSetClz)
+
+        funSpecBuilder.addStatement("%T.advanceToNextNode(parser)", helperClz)
 
         var name = node.name().toString()
         if (name == TAG_REQUEST_FOCUS) {
@@ -180,7 +193,8 @@ object FastInflateLayoutGenerator {
             val children = node.children()
             children.forEachIndexed { i, n ->
                 (n as? Node)?.let {
-                    rGenerate(funSpecBuilder, it, depth + 1, i)
+                    val childFuncName = rGenerate(childFuncPrefix, it, i)
+                    funSpecBuilder.addStatement("$childFuncName(parser, view, context, attrs)")
                 }
             }
 
@@ -191,6 +205,8 @@ object FastInflateLayoutGenerator {
         funSpecBuilder.addStatement("%T.callOnFinishInflate(parent)", helperClz)
 
         rGenerateFuncList.add(funSpecBuilder.build())
+
+        return funcName
     }
 
     private fun genCreateViewFunc(name: String) {
@@ -206,10 +222,7 @@ object FastInflateLayoutGenerator {
             .returns(viewClz)
             .addStatement("var ctx = context")
             .addStatement("if (!ignoreThemeAttr) {")
-            .addStatement(
-                "val ta = context.obtainStyledAttributes(attrs, intArrayOf(%T.getResId(%L, %L, %L)))",
-                helperClz, "\"theme\"", "\"attr\"", "\"android\""
-            )
+            .addStatement("val ta = context.obtainStyledAttributes(attrs, ATTRS_THEME)")
             .addStatement("val themeResId = ta.getResourceId(0, 0)")
             .addStatement(
                 "if (themeResId != 0) { ctx = %T(context, themeResId) }",
@@ -252,7 +265,7 @@ object FastInflateLayoutGenerator {
 
     private fun String.fixViewName(): String {
         return if (indexOf('.') == -1) {
-            "android.view.$this"
+            convertSysView(this)
         } else {
             this
         }

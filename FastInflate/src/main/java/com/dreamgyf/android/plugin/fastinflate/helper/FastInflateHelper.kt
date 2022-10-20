@@ -9,7 +9,6 @@ import android.view.InflateException
 import android.view.LayoutInflater
 import android.view.LayoutInflater.Factory2
 import android.view.View
-import android.view.FastInflateViewStub
 import com.dreamgyf.android.plugin.fastinflate.exception.FastInflateException
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
@@ -20,6 +19,14 @@ object FastInflateHelper : IFastInflateHelper {
     @Throws(InflateException::class, IOException::class, XmlPullParserException::class)
     override fun advanceToRootNode(parser: XmlPullParser) {
         getHelperImpl().advanceToRootNode(parser)
+    }
+
+    fun advanceToNextNode(parser: XmlPullParser) {
+        var type: Int
+        while (parser.next().also { type = it } != XmlPullParser.START_TAG &&
+            type != XmlPullParser.END_DOCUMENT) {
+            // do nothing
+        }
     }
 
     override fun getInflaterPrivateFactory(inflater: LayoutInflater): Factory2? {
@@ -36,7 +43,11 @@ object FastInflateHelper : IFastInflateHelper {
     }
 
     fun callOnFinishInflate(view: View) {
-        FastInflateViewStub.callOnFinishInflate(view)
+        val clz = View::class.java
+        val method = clz.getDeclaredMethod("onFinishInflate")
+        method.isAccessible = true
+        method.invoke(view)
+//        FastInflateViewStub.callOnFinishInflate(view)
     }
 
     private fun getHelperImpl(): IFastInflateHelper {

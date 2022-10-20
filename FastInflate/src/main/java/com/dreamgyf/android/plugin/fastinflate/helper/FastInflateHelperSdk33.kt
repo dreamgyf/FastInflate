@@ -3,16 +3,16 @@ package com.dreamgyf.android.plugin.fastinflate.helper
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
-import android.view.InflateException
 import android.view.LayoutInflater
 import android.view.View
+import com.dreamgyf.android.plugin.fastinflate.exception.FastInflateException
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 
 object FastInflateHelperApi33 : IFastInflateHelper {
 
-    @Throws(InflateException::class, IOException::class, XmlPullParserException::class)
+    @Throws(FastInflateException::class, IOException::class, XmlPullParserException::class)
     override fun advanceToRootNode(parser: XmlPullParser) {
         // Look for the root node.
         var type: Int
@@ -21,7 +21,7 @@ object FastInflateHelperApi33 : IFastInflateHelper {
             // Empty
         }
         if (type != XmlPullParser.START_TAG) {
-            throw InflateException(
+            throw FastInflateException(
                 parser.positionDescription
                         + ": No start tag found!"
             )
