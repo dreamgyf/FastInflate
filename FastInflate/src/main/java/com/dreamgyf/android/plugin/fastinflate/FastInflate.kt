@@ -1,6 +1,7 @@
 package com.dreamgyf.android.plugin.fastinflate
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,8 @@ import java.lang.reflect.Method
 
 class FastInflate private constructor(private val appContext: Context) {
 
+    private val supportSdk = Build.VERSION.SDK_INT in SUPPORT_SDKS
+
     private val inflateMethodMap = mutableMapOf<Int, Pair<Any, Method>>()
 
     fun inflate(
@@ -17,6 +20,10 @@ class FastInflate private constructor(private val appContext: Context) {
         root: ViewGroup?,
         attachToRoot: Boolean = (root != null)
     ): View {
+        if (!supportSdk) {
+            return LayoutInflater.from(appContext).inflate(resource, root, attachToRoot)
+        }
+
         try {
             var pair = inflateMethodMap[resource]
             if (pair == null) {
@@ -40,12 +47,28 @@ class FastInflate private constructor(private val appContext: Context) {
 
             return method.invoke(instance, resource, root, attachToRoot) as View
         } catch (t: Throwable) {
-            Log.e("FastInflate", t.message ?: "")
+            Log.e("FastInflate", "FastInflate failed, fall back to LayoutInflater.")
             return LayoutInflater.from(appContext).inflate(resource, root, attachToRoot)
         }
     }
 
     companion object {
+
+        private val SUPPORT_SDKS = intArrayOf(
+            Build.VERSION_CODES.LOLLIPOP,
+            Build.VERSION_CODES.LOLLIPOP_MR1,
+            Build.VERSION_CODES.M,
+            Build.VERSION_CODES.N,
+            Build.VERSION_CODES.N_MR1,
+            Build.VERSION_CODES.O,
+            Build.VERSION_CODES.O_MR1,
+            Build.VERSION_CODES.P,
+            Build.VERSION_CODES.Q,
+            Build.VERSION_CODES.R,
+            Build.VERSION_CODES.S,
+            Build.VERSION_CODES.S_V2,
+            Build.VERSION_CODES.TIRAMISU
+        )
 
         var instance: FastInflate? = null
 

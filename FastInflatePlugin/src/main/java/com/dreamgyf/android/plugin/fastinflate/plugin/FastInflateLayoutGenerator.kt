@@ -48,6 +48,12 @@ object FastInflateLayoutGenerator {
 
         var rootName = root.name().toString()
         if (rootName == TAG_MERGE) {
+            inflateFunBuilder
+                .addStatement(
+                    "if (root == null || !attachToRoot) { throw %T(\"%L\") }",
+                    fastInflateExceptionClz,
+                    "<merge /> can be used only with a valid ViewGroup root and attachToRoot=true"
+                )
             //TODO
         } else {
             if (rootName == "view") {
