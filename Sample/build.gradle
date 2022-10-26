@@ -1,17 +1,17 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'android-fastinflate'
+    id 'com.dreamgyf.android.fastinflate'
 }
 
 android {
     namespace 'com.dreamgyf.android.plugin.fastinflate'
-    compileSdk 32
+    compileSdk configs.android.compileSdk
 
     defaultConfig {
         applicationId "com.dreamgyf.android.plugin.fastinflate"
-        minSdk 21
-        targetSdk 32
+        minSdk configs.android.minSdk
+        targetSdk configs.android.targetSdk
         versionCode 1
         versionName "1.0"
 
@@ -34,14 +34,10 @@ android {
 }
 
 dependencies {
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.android.material
+    implementation libs.androidx.constraintlayout
 
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.6.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-
-    implementation 'com.dreamgyf.android.plugin:FastInflate:0.1'
+    implementation libs.dreamgyf.FastInflate
 }

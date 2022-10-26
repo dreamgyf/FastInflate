@@ -1,36 +1,27 @@
 plugins {
     id 'kotlin'
-    id 'java-gradle-plugin'
-    id 'maven-publish'
     id 'groovy'
 }
 
-//publishing {
-//    publications {
-//        release(MavenPublication) {
-//            groupId = 'com.dreamgyf.android.plugin'
-//            artifactId = 'FastInflatePlugin'
-//            version = '0.1'
-//            from components.java
-//        }
-//    }
-//}
+def file = new File("${rootDir.parent}/module_publish.gradle")
+if (file.exists()) {
+    apply from: file.absolutePath
 
-gradlePlugin {
-    plugins {
-        fastInflate {
-            id = 'android-fastinflate'
+    publishModule {
+        plugin {
+            group = 'com.dreamgyf.android.plugin'
+            id = 'com.dreamgyf.android.fastinflate'
+            name = 'fastInflate'
+            displayName = 'Android FastInflate'
+            version = '0.1.0-alpha-01'
             implementationClass = 'com.dreamgyf.android.plugin.fastinflate.plugin.FastInflatePlugin'
-            version '0.1'
+            description = '编译期解析布局xml文件，提高布局加载的性能'
+            url = 'https://github.com/dreamgyf/FastInflate'
+            tags = ['android', 'LayoutInflater']
         }
     }
 }
 
 dependencies {
-    //Groovy DSL
-    implementation gradleApi()
-    //Gradle DSL
-    implementation localGroovy()
-    implementation 'com.android.tools.build:gradle:7.3.0'
-    implementation 'com.squareup:kotlinpoet:1.12.0'
+    implementation libs.kotlinpoet
 }

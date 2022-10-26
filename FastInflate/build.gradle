@@ -1,16 +1,30 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id 'maven-publish'
+}
+
+def file = new File("${rootDir.parent}/module_publish.gradle")
+if (file.exists()) {
+    apply from: file.absolutePath
+
+    publishModule {
+        library {
+            groupId = 'com.dreamgyf.android.plugin'
+            moduleName = 'FastInflate'
+            version = '0.1.0-alpha-01'
+            description = '编译期解析布局xml文件，提高布局加载的性能'
+            url = 'https://github.com/dreamgyf/FastInflate'
+        }
+    }
 }
 
 android {
     namespace 'com.dreamgyf.android.plugin.fastinflate'
-    compileSdk 33
+    compileSdk configs.android.compileSdk
 
     defaultConfig {
-        minSdk 21
-        targetSdk 33
+        minSdk configs.android.minSdk
+        targetSdk configs.android.targetSdk
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -31,33 +45,6 @@ android {
     }
 }
 
-task androidSourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
-    from android.sourceSets.main.java.source
-}
-
-publishing {
-    publications {
-        release(MavenPublication) {
-            groupId = 'com.dreamgyf.android.plugin'
-            artifactId = 'FastInflate'
-            version = '0.1'
-
-            def artifactOutputPath = "$buildDir/outputs/aar/${project.getName()}-release.aar"
-            artifact(artifactOutputPath)
-            artifact androidSourcesJar
-        }
-    }
-}
-
 dependencies {
-
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.6.1'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-
-    implementation 'cglib:cglib:3.3.0'
+    implementation libs.androidx.appcompat
 }
