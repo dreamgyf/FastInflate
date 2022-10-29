@@ -23,5 +23,6 @@ if (file.exists()) {
 }
 
 dependencies {
+    implementation libs.android.gradle.tools
     implementation libs.kotlinpoet
 }
