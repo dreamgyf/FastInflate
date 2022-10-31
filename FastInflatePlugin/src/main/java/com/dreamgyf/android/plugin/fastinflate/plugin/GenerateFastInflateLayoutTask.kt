@@ -31,11 +31,10 @@ open class GenerateFastInflateLayoutTask
             }
 
             val layoutName = fileName.substring(0, suffixIndex)
-            val genName = "FastInflate_Layout_$layoutName"
 
-            println("Generating $genName...")
+            println("Generating $layoutName...")
 
-            val genFile = FastInflateLayoutGenerator.generate(genName, file)
+            val genFile = FastInflateLayoutGenerator.generate(layoutName, file)
 
             if (!genDir.exists()) {
                 genDir.mkdirs()

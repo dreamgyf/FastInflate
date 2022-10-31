@@ -5,6 +5,8 @@ import groovy.util.Node
 import groovy.xml.XmlParser
 import java.io.File
 
+const val GEN_PACKAGE_NAME = "com.dreamgyf.android.plugin.fastinflate.generate"
+
 object FastInflateLayoutGenerator {
 
     private const val TAG_MERGE = "merge"
@@ -20,16 +22,69 @@ object FastInflateLayoutGenerator {
     private val createViewFuncMap = mutableMapOf<String, FunSpec>()
     private val rGenerateFuncList = mutableListOf<FunSpec>()
 
-    fun generate(name: String, file: File): FileSpec {
+    fun generate(layoutName: String, file: File): FileSpec {
         createViewFuncMap.clear()
         rGenerateFuncList.clear()
 
+        val genName = "FastInflate_Layout_$layoutName"
+
         val root = xmlParser.parse(file)
 
-        val className = ClassName(
-            "com.dreamgyf.android.plugin.fastinflate.generate", name
+        return FileSpec.builder(
+            GEN_PACKAGE_NAME,
+            genName
         )
+            .addType(generateClass(genName, root))
+            .build()
+    }
 
+    private fun generateClass(genName: String, root: Node): TypeSpec {
+        return TypeSpec.classBuilder(
+            ClassName(
+                GEN_PACKAGE_NAME, genName
+            )
+        )
+            .primaryConstructor(
+                FunSpec.constructorBuilder()
+                    .addParameter("context", contextClz)
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder("context", contextClz)
+                    .initializer("context")
+                    .addModifiers(KModifier.PRIVATE)
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder("layoutInflater", layoutInflaterClz)
+                    .initializer("%T.from(context)", layoutInflaterClz)
+                    .addModifiers(KModifier.PRIVATE)
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder("privateFactory", factory2Clz.copy(nullable = true))
+                    .initializer("null")
+                    .mutable()
+                    .addModifiers(KModifier.PRIVATE)
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder("ATTRS_THEME", intArrayClz)
+                    .initializer(
+                        "intArrayOf(%T.getResId(\"theme\", \"attr\", \"android\"))",
+                        helperClz
+                    )
+                    .addModifiers(KModifier.PRIVATE)
+                    .build()
+            )
+            .addFunction(generateInflateFunc(root))
+            .addFunction(genInflateChildrenFunc(root))
+            .addFunctions(rGenerateFuncList)
+            .addFunctions(createViewFuncMap.values)
+            .build()
+    }
+
+    private fun generateInflateFunc(root: Node): FunSpec {
         val inflateFunBuilder = FunSpec.builder("inflate")
             .addParameter("resource", Int::class.java)
             .addParameter("root", viewGroupClz.copy(nullable = true))
@@ -54,7 +109,7 @@ object FastInflateLayoutGenerator {
                     fastInflateExceptionClz,
                     "<merge /> can be used only with a valid ViewGroup root and attachToRoot=true"
                 )
-            //TODO
+                .addStatement("inflateChildren(parser, root, context, attrs)")
         } else {
             if (rootName == "view") {
                 rootName = root.attribute("class").toString()
@@ -84,49 +139,7 @@ object FastInflateLayoutGenerator {
 
         inflateFunBuilder.addStatement("} finally { parser.close() }")
 
-        return FileSpec.builder(
-            "com.dreamgyf.android.plugin.fastinflate.generate", name
-        ).addType(
-            TypeSpec.classBuilder(className)
-                .primaryConstructor(
-                    FunSpec.constructorBuilder()
-                        .addParameter("context", contextClz)
-                        .build()
-                )
-                .addProperty(
-                    PropertySpec.builder("context", contextClz)
-                        .initializer("context")
-                        .addModifiers(KModifier.PRIVATE)
-                        .build()
-                )
-                .addProperty(
-                    PropertySpec.builder("layoutInflater", layoutInflaterClz)
-                        .initializer("%T.from(context)", layoutInflaterClz)
-                        .addModifiers(KModifier.PRIVATE)
-                        .build()
-                )
-                .addProperty(
-                    PropertySpec.builder("privateFactory", factory2Clz.copy(nullable = true))
-                        .initializer("null")
-                        .mutable()
-                        .addModifiers(KModifier.PRIVATE)
-                        .build()
-                )
-                .addProperty(
-                    PropertySpec.builder("ATTRS_THEME", intArrayClz)
-                        .initializer(
-                            "intArrayOf(%T.getResId(\"theme\", \"attr\", \"android\"))",
-                            helperClz
-                        )
-                        .addModifiers(KModifier.PRIVATE)
-                        .build()
-                )
-                .addFunction(inflateFunBuilder.build())
-                .addFunction(genInflateChildrenFunc(root))
-                .addFunctions(rGenerateFuncList)
-                .addFunctions(createViewFuncMap.values)
-                .build()
-        ).build()
+        return inflateFunBuilder.build()
     }
 
     private fun genInflateChildrenFunc(root: Node): FunSpec {
@@ -247,16 +260,16 @@ object FastInflateLayoutGenerator {
         funSpecBuilder
             .addStatement("var view: %T? = null", viewClz)
             .addStatement(
-                "if (layoutInflater.factory2 != null) { view = layoutInflater.factory2.onCreateView(parent, %L, ctx, attrs) }",
-                "\"$name\""
+                "if (layoutInflater.factory2 != null) { view = layoutInflater.factory2.onCreateView(parent, \"%L\", ctx, attrs) }",
+                name
             )
             .addStatement(
-                "else if (layoutInflater.factory != null) { view = layoutInflater.factory.onCreateView(%L, ctx, attrs) }",
-                "\"$name\""
+                "else if (layoutInflater.factory != null) { view = layoutInflater.factory.onCreateView(\"%L\", ctx, attrs) }",
+                name
             )
             .addStatement(
-                "if (view == null) { view = privateFactory?.onCreateView(%L, ctx, attrs) }",
-                "\"$name\""
+                "if (view == null) { view = privateFactory?.onCreateView(\"%L\", ctx, attrs) }",
+                name
             )
             .addStatement("if (view == null) { view = $fixedName(ctx, attrs) }")
             .apply {
