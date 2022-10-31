@@ -9,7 +9,7 @@ import android.view.View
 import com.dreamgyf.android.plugin.fastinflate.exception.FastInflateException
 import org.xmlpull.v1.XmlPullParser
 
-object CommonFastInflateHelper: IFastInflateHelper {
+object CommonFastInflateHelper : IFastInflateHelper {
 
     override fun advanceToRootNode(parser: XmlPullParser) {
         var type: Int
@@ -33,6 +33,18 @@ object CommonFastInflateHelper: IFastInflateHelper {
         }
     }
 
+    override fun consumeChildElements(parser: XmlPullParser) {
+        var type: Int
+        val currentDepth = parser.depth
+        while (
+            (parser.next().also { type = it } != XmlPullParser.END_TAG
+                    || parser.depth > currentDepth)
+            && type != XmlPullParser.END_DOCUMENT
+        ) {
+            // do nothing
+        }
+    }
+
     @SuppressLint("DiscouragedPrivateApi")
     override fun getInflaterPrivateFactory(inflater: LayoutInflater): LayoutInflater.Factory2? {
         val clz = LayoutInflater::class.java
@@ -41,6 +53,7 @@ object CommonFastInflateHelper: IFastInflateHelper {
         return field.get(inflater) as? LayoutInflater.Factory2?
     }
 
+    @SuppressLint("PrivateApi")
     override fun newBlinkLayout(context: Context, attrs: AttributeSet): View {
         val clz = Class.forName("android.view.LayoutInflater\$BlinkLayout")
         val constructor = clz.getDeclaredConstructor(Context::class.java, AttributeSet::class.java)

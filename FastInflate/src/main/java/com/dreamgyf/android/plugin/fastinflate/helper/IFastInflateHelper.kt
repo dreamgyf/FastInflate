@@ -16,6 +16,10 @@ interface IFastInflateHelper {
         CommonFastInflateHelper.advanceToNextNode(parser)
     }
 
+    fun consumeChildElements(parser: XmlPullParser) {
+        CommonFastInflateHelper.consumeChildElements(parser)
+    }
+
     fun getInflaterPrivateFactory(inflater: LayoutInflater): LayoutInflater.Factory2? {
         return CommonFastInflateHelper.getInflaterPrivateFactory(inflater)
     }

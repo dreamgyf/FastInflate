@@ -44,8 +44,13 @@ class MainActivity : AppCompatActivity() {
 //            Log.i("FastInflate", "normalDuration: ${normalEndTime - normalStartTime}")
 //        }
 
-        LayoutInflater.from(this).inflate(R.layout.activity_main, null)
-        FastInflate.from(this).inflate(R.layout.activity_main, null)
+        //排除缓存影响
+        for (i in 0 until 1000) {
+            LayoutInflater.from(this).inflate(R.layout.activity_main, null)
+        }
+        for (i in 0 until 1000) {
+            FastInflate.from(this).inflate(R.layout.activity_main, null)
+        }
 
         val normalStartTime = System.currentTimeMillis()
         for (i in 0 until 1000) {

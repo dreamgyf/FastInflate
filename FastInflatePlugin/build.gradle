@@ -13,7 +13,7 @@ if (file.exists()) {
             id = 'com.dreamgyf.android.fastinflate'
             name = 'fastInflate'
             displayName = 'Android FastInflate'
-            version = '0.1.0-alpha-01'
+            version = '0.1.0-alpha-02'
             implementationClass = 'com.dreamgyf.android.plugin.fastinflate.plugin.FastInflatePlugin'
             description = '编译期解析布局xml文件，提高布局加载的性能'
             url = 'https://github.com/dreamgyf/FastInflate'

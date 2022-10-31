@@ -171,7 +171,9 @@ object FastInflateLayoutGenerator {
 
         val nodeName = node.name().toString()
         if (nodeName == TAG_REQUEST_FOCUS) {
-            funSpecBuilder.addStatement("parent.restoreDefaultFocus()")
+            funSpecBuilder
+                .addStatement("%T.consumeChildElements(parser)")
+                .addStatement("parent.restoreDefaultFocus()")
         } else if (nodeName == TAG_TAG) {
             //TODO
         } else if (nodeName == TAG_INCLUDE) {
