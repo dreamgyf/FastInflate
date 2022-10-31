@@ -66,6 +66,42 @@ object CommonFastInflateHelper : IFastInflateHelper {
         return Resources.getSystem().getIdentifier(name, defType, defPackage)
     }
 
+    private val ATTRS_THEME by lazy {
+        intArrayOf(
+            getResId("theme", "attr", "android")
+        )
+    }
+
+    override fun getThemeAttrs(): IntArray {
+        return ATTRS_THEME
+    }
+
+    private val ATTRS_VIEW_TAG by lazy {
+        intArrayOf(
+            android.R.attr.id,
+            android.R.attr.value
+        ).apply {
+            sort()
+        }
+    }
+
+    private val INDEX_VIEW_TAG_ID by lazy {
+        ATTRS_VIEW_TAG.binarySearch(android.R.attr.id)
+    }
+
+    private val INDEX_VIEW_TAG_VALUE by lazy {
+        ATTRS_VIEW_TAG.binarySearch(android.R.attr.value)
+    }
+
+    override fun parseViewTag(parser: XmlPullParser, view: View, attrs: AttributeSet) {
+        val context = view.context
+        val ta = context.obtainStyledAttributes(attrs, ATTRS_VIEW_TAG)
+        val key = ta.getResourceId(INDEX_VIEW_TAG_ID, 0)
+        val value = ta.getText(INDEX_VIEW_TAG_VALUE)
+        view.setTag(key, value)
+        ta.recycle()
+    }
+
     override fun callOnFinishInflate(view: View) {
         val clz = View::class.java
         val method = clz.getDeclaredMethod("onFinishInflate")

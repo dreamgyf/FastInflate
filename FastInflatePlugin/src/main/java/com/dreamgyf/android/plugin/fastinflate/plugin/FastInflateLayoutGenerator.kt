@@ -71,7 +71,7 @@ object FastInflateLayoutGenerator {
             .addProperty(
                 PropertySpec.builder("ATTRS_THEME", intArrayClz)
                     .initializer(
-                        "intArrayOf(%T.getResId(\"theme\", \"attr\", \"android\"))",
+                        "%T.getThemeAttrs()",
                         helperClz
                     )
                     .addModifiers(KModifier.PRIVATE)
@@ -172,10 +172,12 @@ object FastInflateLayoutGenerator {
         val nodeName = node.name().toString()
         if (nodeName == TAG_REQUEST_FOCUS) {
             funSpecBuilder
-                .addStatement("%T.consumeChildElements(parser)")
+                .addStatement("%T.consumeChildElements(parser)", helperClz)
                 .addStatement("parent.restoreDefaultFocus()")
         } else if (nodeName == TAG_TAG) {
-            //TODO
+            funSpecBuilder
+                .addStatement("%T.parseViewTag(parser, parent, attrs)", helperClz)
+                .addStatement("%T.consumeChildElements(parser)", helperClz)
         } else if (nodeName == TAG_INCLUDE) {
             //TODO
         } else if (nodeName == TAG_MERGE) {
@@ -203,6 +205,7 @@ object FastInflateLayoutGenerator {
         }
 
         //TODO: include后merge标签不执行以下代码
+        //fixme: 调用时机错误
         funSpecBuilder.addStatement("%T.callOnFinishInflate(parent)", helperClz)
 
         rGenerateFuncList.add(funSpecBuilder.build())

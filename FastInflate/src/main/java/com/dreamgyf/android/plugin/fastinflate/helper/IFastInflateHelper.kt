@@ -32,6 +32,14 @@ interface IFastInflateHelper {
         return CommonFastInflateHelper.getResId(name, defType, defPackage)
     }
 
+    fun getThemeAttrs(): IntArray {
+        return CommonFastInflateHelper.getThemeAttrs()
+    }
+
+    fun parseViewTag(parser: XmlPullParser, view: View, attrs: AttributeSet) {
+        return CommonFastInflateHelper.parseViewTag(parser, view, attrs)
+    }
+
     fun callOnFinishInflate(view: View) {
         CommonFastInflateHelper.callOnFinishInflate(view)
     }
