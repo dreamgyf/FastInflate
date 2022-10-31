@@ -101,8 +101,8 @@ object FastInflateLayoutGenerator {
             .addStatement("var result: %T = root", viewClz.copy(nullable = true))
             .addStatement("%T.advanceToRootNode(parser)", helperClz)
 
-        var rootName = root.name().toString()
-        if (rootName == TAG_MERGE) {
+        val rootNodeName = root.name().toString()
+        if (rootNodeName == TAG_MERGE) {
             inflateFunBuilder
                 .addStatement(
                     "if (root == null || !attachToRoot) { throw %T(\"%L\") }",
@@ -111,26 +111,15 @@ object FastInflateLayoutGenerator {
                 )
                 .addStatement("inflateChildren(parser, root, context, attrs)")
         } else {
-            if (rootName == "view") {
-                rootName = root.attribute("class").toString()
-            }
-
-            genCreateViewFunc(rootName)
-
             inflateFunBuilder.addStatement(
-                "val temp = createView_${
-                    rootName.replace(
-                        '.',
-                        '_'
-                    )
-                }(root, context, attrs, false)"
+                "val temp = %L(root, context, attrs, false)",
+                genCreateViewFunc(root)
             )
                 .addStatement("var params: %T.LayoutParams? = null", viewGroupClz)
                 .addStatement("if (root != null) {")
                 .addStatement("params = root.generateLayoutParams(attrs)")
-                .addStatement("if (!attachToRoot) {")
-                .addStatement("temp.layoutParams = params")
-                .addStatement("}}")
+                .addStatement("if (!attachToRoot) { temp.layoutParams = params }")
+                .addStatement("}")
                 .addStatement("inflateChildren(parser, temp, context, attrs)")
                 .addStatement("if (root != null && attachToRoot) { root.addView(temp, params) }")
                 .addStatement("if (root == null || !attachToRoot) { result = temp }")
@@ -180,31 +169,22 @@ object FastInflateLayoutGenerator {
 
         funSpecBuilder.addStatement("%T.advanceToNextNode(parser)", helperClz)
 
-        var name = node.name().toString()
-        if (name == TAG_REQUEST_FOCUS) {
+        val nodeName = node.name().toString()
+        if (nodeName == TAG_REQUEST_FOCUS) {
             funSpecBuilder.addStatement("parent.restoreDefaultFocus()")
-        } else if (name == TAG_TAG) {
+        } else if (nodeName == TAG_TAG) {
             //TODO
-        } else if (name == TAG_INCLUDE) {
+        } else if (nodeName == TAG_INCLUDE) {
             //TODO
-        } else if (name == TAG_MERGE) {
+        } else if (nodeName == TAG_MERGE) {
             funSpecBuilder.addStatement(
                 "throw %T(\"<merge /> must be the root element\")",
                 fastInflateExceptionClz
             )
         } else {
-            if (name == "view") {
-                name = node.attribute("class").toString()
-            }
-            genCreateViewFunc(name)
-
             funSpecBuilder.addStatement(
-                "val view = createView_${
-                    name.replace(
-                        '.',
-                        '_'
-                    )
-                }(parent, context, attrs, false)"
+                "val view = %L(parent, context, attrs, false)",
+                genCreateViewFunc(node)
             )
                 .addStatement("val viewGroup = parent as %T", viewGroupClz)
                 .addStatement("val params = viewGroup.generateLayoutParams(attrs)")
@@ -228,63 +208,75 @@ object FastInflateLayoutGenerator {
         return funcName
     }
 
-    private fun genCreateViewFunc(name: String) {
-        if (createViewFuncMap.contains(name)) return
+    private fun genCreateViewFunc(node: Node): String {
+        val nodeName = node.name().toString()
+        val className = if (nodeName == "view") {
+            node.attribute("class").toString()
+        } else {
+            nodeName
+        }
+        val fixedClassName = className.fixViewName()
+        val funcName = "createView_${fixedClassName.replace('.', '_')}"
 
-        val subFuncName = name.replace('.', '_')
-        val fixedName = name.fixViewName()
-        val funSpecBuilder = FunSpec.builder("createView_$subFuncName")
-            .addParameter("parent", viewClz.copy(nullable = true))
-            .addParameter("context", contextClz)
-            .addParameter("attrs", attributeSetClz)
-            .addParameter("ignoreThemeAttr", Boolean::class.java)
-            .returns(viewClz)
-            .addStatement("var ctx = context")
-            .addStatement("if (!ignoreThemeAttr) {")
-            .addStatement("val ta = context.obtainStyledAttributes(attrs, ATTRS_THEME)")
-            .addStatement("val themeResId = ta.getResourceId(0, 0)")
-            .addStatement(
-                "if (themeResId != 0) { ctx = %T(context, themeResId) }",
-                contextThemeWrapperClz
-            )
-            .addStatement("ta.recycle() }")
+        if (!createViewFuncMap.contains(funcName)) {
+            val funSpecBuilder = FunSpec.builder(funcName)
+                .addParameter("parent", viewClz.copy(nullable = true))
+                .addParameter("context", contextClz)
+                .addParameter("attrs", attributeSetClz)
+                .addParameter("ignoreThemeAttr", Boolean::class.java)
+                .returns(viewClz)
+                .addStatement("var ctx = context")
+                .addStatement("if (!ignoreThemeAttr) {")
+                .addStatement("val ta = context.obtainStyledAttributes(attrs, ATTRS_THEME)")
+                .addStatement("val themeResId = ta.getResourceId(0, 0)")
+                .addStatement(
+                    "if (themeResId != 0) { ctx = %T(context, themeResId) }",
+                    contextThemeWrapperClz
+                )
+                .addStatement("ta.recycle() }")
 
-        if (name == TAG_1995) {
-            val funSpec = funSpecBuilder
-                .addStatement("return %T.newBlinkLayout(ctx, attrs)", helperClz)
-                .build()
-            createViewFuncMap[name] = funSpec
-            return
+            if (nodeName == TAG_1995) {
+                funSpecBuilder.addStatement("return %T.newBlinkLayout(ctx, attrs)", helperClz)
+            } else {
+                funSpecBuilder
+                    .addStatement("var view: %T? = null", viewClz)
+                    .addStatement("if (layoutInflater.factory2 != null) {")
+                    .addStatement(
+                        "view = layoutInflater.factory2.onCreateView(parent, \"%L\", ctx, attrs)",
+                        className
+                    )
+                    .addStatement("} else if (layoutInflater.factory != null) {")
+                    .addStatement(
+                        "view = layoutInflater.factory.onCreateView(\"%L\", ctx, attrs)",
+                        className
+                    )
+                    .addStatement("}")
+                    .addStatement(
+                        "if (view == null) { view = privateFactory?.onCreateView(\"%L\", ctx, attrs) }",
+                        className
+                    )
+                    .addStatement("if (view == null) { view = $fixedClassName(ctx, attrs) }")
+                    .apply {
+                        if (className == "android.view.ViewStub") {
+                            addStatement("view.layoutInflater = LayoutInflater.from(context)")
+                        }
+                    }
+                    .addStatement("return view")
+            }
+
+            createViewFuncMap[funcName] = funSpecBuilder.build()
         }
 
-        funSpecBuilder
-            .addStatement("var view: %T? = null", viewClz)
-            .addStatement(
-                "if (layoutInflater.factory2 != null) { view = layoutInflater.factory2.onCreateView(parent, \"%L\", ctx, attrs) }",
-                name
-            )
-            .addStatement(
-                "else if (layoutInflater.factory != null) { view = layoutInflater.factory.onCreateView(\"%L\", ctx, attrs) }",
-                name
-            )
-            .addStatement(
-                "if (view == null) { view = privateFactory?.onCreateView(\"%L\", ctx, attrs) }",
-                name
-            )
-            .addStatement("if (view == null) { view = $fixedName(ctx, attrs) }")
-            .apply {
-                if (name == "android.view.ViewStub") {
-                    addStatement("view.layoutInflater = LayoutInflater.from(context)")
-                }
-            }
-            .addStatement("return view")
-
-        createViewFuncMap[name] = funSpecBuilder.build()
+        return funcName
     }
 
     private fun String.fixViewName(): String {
         return if (indexOf('.') == -1) {
-            convertSysView(this)
+            if (this == TAG_1995) {
+                this
+            } else {
+                convertSysView(this)
+            }
         } else {
             this
         }
