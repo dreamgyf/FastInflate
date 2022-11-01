@@ -138,6 +138,9 @@ object FastInflateLayoutGenerator {
             .addParameter("context", contextClz)
             .addParameter("attrs", attributeSetClz)
 
+        val rootNodeName = root.name().toString()
+        val finishInflate = rootNodeName != TAG_MERGE
+
         val children = root.children()
         if (children.isEmpty()) {
             return funSpecBuilder.build()
@@ -145,7 +148,12 @@ object FastInflateLayoutGenerator {
 
         children.forEachIndexed { index, node ->
             (node as? Node)?.let {
-                val funcName = rGenerate("", it, index)
+                val funcName = rGenerate(
+                    "",
+                    it,
+                    index,
+                    finishInflate && (index == children.size - 1)
+                )
                 funSpecBuilder.addStatement("$funcName(parser, parent, context, attrs)")
             }
         }
@@ -156,7 +164,8 @@ object FastInflateLayoutGenerator {
     private fun rGenerate(
         funcPrefix: String,
         node: Node,
-        index: Int
+        index: Int,
+        finishInflate: Boolean
     ): String {
         val funcName = "rInflate_${funcPrefix}_${index}"
         val childFuncPrefix = "${funcPrefix}_${index}"
@@ -196,7 +205,12 @@ object FastInflateLayoutGenerator {
             val children = node.children()
             children.forEachIndexed { i, n ->
                 (n as? Node)?.let {
-                    val childFuncName = rGenerate(childFuncPrefix, it, i)
+                    val childFuncName = rGenerate(
+                        childFuncPrefix,
+                        it,
+                        i,
+                        i == children.size - 1
+                    )
                     funSpecBuilder.addStatement("$childFuncName(parser, view, context, attrs)")
                 }
             }
@@ -204,9 +218,9 @@ object FastInflateLayoutGenerator {
             funSpecBuilder.addStatement("viewGroup.addView(view, params)")
         }
 
-        //TODO: include后merge标签不执行以下代码
-        //fixme: 调用时机错误
-        funSpecBuilder.addStatement("%T.callOnFinishInflate(parent)", helperClz)
+        if (finishInflate) {
+            funSpecBuilder.addStatement("%T.callOnFinishInflate(parent)", helperClz)
+        }
 
         rGenerateFuncList.add(funSpecBuilder.build())
 
