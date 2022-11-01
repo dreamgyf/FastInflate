@@ -138,6 +138,7 @@ object FastInflateLayoutGenerator {
             .addParameter("context", contextClz)
             .addParameter("attrs", attributeSetClz)
 
+        var pendingRequestFocus = false
         val rootNodeName = root.name().toString()
         val finishInflate = rootNodeName != TAG_MERGE
 
@@ -148,11 +149,17 @@ object FastInflateLayoutGenerator {
 
         children.forEachIndexed { index, node ->
             (node as? Node)?.let {
+                val nodeName = it.name().toString()
+                if (nodeName == TAG_REQUEST_FOCUS) {
+                    pendingRequestFocus = true
+                }
+                val isLastNode = index == children.size - 1
                 val funcName = rGenerate(
                     "",
                     it,
                     index,
-                    finishInflate && (index == children.size - 1)
+                    pendingRequestFocus && isLastNode,
+                    finishInflate && isLastNode
                 )
                 funSpecBuilder.addStatement("$funcName(parser, parent, context, attrs)")
             }
@@ -165,6 +172,7 @@ object FastInflateLayoutGenerator {
         funcPrefix: String,
         node: Node,
         index: Int,
+        requestFocus: Boolean,
         finishInflate: Boolean
     ): String {
         val funcName = "rInflate_${funcPrefix}_${index}"
@@ -180,9 +188,7 @@ object FastInflateLayoutGenerator {
 
         val nodeName = node.name().toString()
         if (nodeName == TAG_REQUEST_FOCUS) {
-            funSpecBuilder
-                .addStatement("%T.consumeChildElements(parser)", helperClz)
-                .addStatement("parent.restoreDefaultFocus()")
+            funSpecBuilder.addStatement("%T.consumeChildElements(parser)", helperClz)
         } else if (nodeName == TAG_TAG) {
             funSpecBuilder
                 .addStatement("%T.parseViewTag(parser, parent, attrs)", helperClz)
@@ -203,19 +209,30 @@ object FastInflateLayoutGenerator {
                 .addStatement("val params = viewGroup.generateLayoutParams(attrs)")
 
             val children = node.children()
+            var pendingRequestFocus = false
             children.forEachIndexed { i, n ->
                 (n as? Node)?.let {
+                    val childNodeName = it.name().toString()
+                    if (childNodeName == TAG_REQUEST_FOCUS) {
+                        pendingRequestFocus = true
+                    }
+                    val isLastNode = i == children.size - 1
                     val childFuncName = rGenerate(
                         childFuncPrefix,
                         it,
                         i,
-                        i == children.size - 1
+                        pendingRequestFocus && isLastNode,
+                        isLastNode
                     )
                     funSpecBuilder.addStatement("$childFuncName(parser, view, context, attrs)")
                 }
             }
 
             funSpecBuilder.addStatement("viewGroup.addView(view, params)")
+        }
+
+        if (requestFocus) {
+            funSpecBuilder.addStatement("parent.restoreDefaultFocus()")
         }
 
         if (finishInflate) {
