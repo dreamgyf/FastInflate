@@ -107,7 +107,7 @@ object FastInflateLayoutGenerator {
                 .addStatement(
                     "if (root == null || !attachToRoot) { throw %T(\"%L\") }",
                     fastInflateExceptionClz,
-                    "<merge /> can be used only with a valid ViewGroup root and attachToRoot=true"
+                    "<merge·/>·can·be·used·only·with·a·valid·ViewGroup·root·and·attachToRoot=true"
                 )
                 .addStatement("inflateChildren(parser, root, context, attrs)")
         } else {
@@ -123,10 +123,11 @@ object FastInflateLayoutGenerator {
                 .addStatement("inflateChildren(parser, temp, context, attrs)")
                 .addStatement("if (root != null && attachToRoot) { root.addView(temp, params) }")
                 .addStatement("if (root == null || !attachToRoot) { result = temp }")
-                .addStatement("return result!!")
         }
 
-        inflateFunBuilder.addStatement("} finally { parser.close() }")
+        inflateFunBuilder
+            .addStatement("return result!!")
+            .addStatement("} finally { parser.close() }")
 
         return inflateFunBuilder.build()
     }
@@ -194,7 +195,9 @@ object FastInflateLayoutGenerator {
                 .addStatement("%T.parseViewTag(parser, parent, attrs)", helperClz)
                 .addStatement("%T.consumeChildElements(parser)", helperClz)
         } else if (nodeName == TAG_INCLUDE) {
-            //TODO
+            funSpecBuilder
+                .addStatement("%T.parseInclude(parser, context, parent, attrs)", helperClz)
+                .addStatement("%T.consumeChildElements(parser)", helperClz)
         } else if (nodeName == TAG_MERGE) {
             funSpecBuilder.addStatement(
                 "throw %T(\"<merge /> must be the root element\")",

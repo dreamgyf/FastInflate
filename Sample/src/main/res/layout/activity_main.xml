@@ -49,4 +49,15 @@
 
     </FrameLayout>
 
+    <include
+        android:id="@+id/layout_include_normal"
+        layout="@layout/layout_include_normal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <include
+        android:id="@+id/layout_include_merge"
+        layout="@layout/layout_include_merge" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

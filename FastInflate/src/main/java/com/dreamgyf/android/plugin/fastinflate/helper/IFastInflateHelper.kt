@@ -40,6 +40,10 @@ interface IFastInflateHelper {
         return CommonFastInflateHelper.parseViewTag(parser, view, attrs)
     }
 
+    fun parseInclude(parser: XmlPullParser, context: Context, parent: View, attrs: AttributeSet) {
+        return CommonFastInflateHelper.parseInclude(parser, context, parent, attrs)
+    }
+
     fun callOnFinishInflate(view: View) {
         CommonFastInflateHelper.callOnFinishInflate(view)
     }
