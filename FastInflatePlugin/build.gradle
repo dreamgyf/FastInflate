@@ -15,7 +15,8 @@ if (file.exists()) {
             displayName = 'Android FastInflate'
             version = '0.1.0-alpha-02'
             implementationClass = 'com.dreamgyf.android.plugin.fastinflate.plugin.FastInflatePlugin'
-            description = '编译期解析布局xml文件，提高布局加载的性能'
+            description = 'Parse the layout xml file at compile time, and convert the reflection instantiation in LayoutInflater into normal instantiation, so as to improve the performance of layout loading.\n' +
+                    '编译期时解析布局xml文件，将LayoutInflater中的反射实例化转成普通的实例化，以此来提高布局加载的性能'
             url = 'https://github.com/dreamgyf/FastInflate'
             tags = ['android', 'LayoutInflater']
         }
