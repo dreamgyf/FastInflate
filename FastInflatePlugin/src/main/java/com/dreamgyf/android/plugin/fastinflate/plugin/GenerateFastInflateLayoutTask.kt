@@ -8,12 +8,20 @@ import java.io.FileFilter
 import javax.inject.Inject
 
 open class GenerateFastInflateLayoutTask
-@Inject constructor(private val flavor: String) : DefaultTask() {
+@Inject constructor(flavor: String, buildType: String, buildVariant: String) : DefaultTask() {
 
-    private val layoutDir = File("${project.buildDir}/intermediates/packaged_res/$flavor/layout")
+    private val layoutDir =
+        File("${project.buildDir}/intermediates/packaged_res/$buildVariant/layout")
 
     @Internal
-    val genDir = File("${project.buildDir}/generated/source/fastinflate")
+    val genDir = File(
+        StringBuilder("${project.buildDir}/generated/source/fastinflate").apply {
+            if (flavor.isNotEmpty()) {
+                append("/$flavor")
+            }
+            append("/$buildType")
+        }.toString()
+    )
 
     @TaskAction
     fun doTask() {

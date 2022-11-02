@@ -18,6 +18,22 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    flavorDimensions = ['version', 'channel']
+    productFlavors {
+        version1 {
+            dimension = 'version'
+        }
+        version2 {
+            dimension = 'version'
+        }
+        channel1 {
+            dimension = 'channel'
+        }
+        channel2 {
+            dimension = 'channel'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
