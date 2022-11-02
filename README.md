@@ -6,7 +6,7 @@
 
 **当前版本为alpha测试版，仅供学习研究使用，由此插件引发的各种损失，本人概不负责！！！**
 
-**目前不支持多`module`、多`flavor`项目，`<include />`标签不支持使用`theme`属性**
+**目前暂不支持多`module`项目，不支持多`layout`目录（比如`layout-v23`），`<include />`标签不支持使用`theme`属性**
 
 
 **注：编译此项目请直接 clone 父工程 [AndroidLibraries](https://github.com/dreamgyf/AndroidLibraries)**
@@ -17,11 +17,11 @@
 
 ```groovy
 plugins {
-    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-02'
+    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-03'
 }
 
 dependencies {
-    implementation 'com.dreamgyf.android.fastinflate:0.1.0-alpha-02'
+    implementation 'com.dreamgyf.android.fastinflate:0.1.0-alpha-03'
 }
 ```
 
