@@ -1,6 +1,7 @@
 package com.dreamgyf.android.plugin.fastinflate.plugin
 
 import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.jvm.throws
 import groovy.util.Node
 import groovy.xml.XmlParser
 import java.io.File
@@ -96,7 +97,7 @@ object FastInflateLayoutGenerator {
             )
             .addStatement("val res = context.resources")
             .addStatement("val parser = res.getLayout(resource)")
-            .addStatement("try {")
+            .beginControlFlow("try")
             .addStatement("val attrs = %T.asAttributeSet(parser)", xmlClz)
             .addStatement("var result: %T = root", viewClz.copy(nullable = true))
             .addStatement("%T.advanceToRootNode(parser)", helperClz)
@@ -104,11 +105,13 @@ object FastInflateLayoutGenerator {
         val rootNodeName = root.name().toString()
         if (rootNodeName == TAG_MERGE) {
             inflateFunBuilder
+                .beginControlFlow("if (root == null || !attachToRoot)")
                 .addStatement(
-                    "if (root == null || !attachToRoot) { throw %T(\"%L\") }",
+                    "throw %T(%S)",
                     fastInflateExceptionClz,
-                    "<merge·/>·can·be·used·only·with·a·valid·ViewGroup·root·and·attachToRoot=true"
+                    "<merge /> can be used only with a valid ViewGroup root and attachToRoot=true"
                 )
+                .endControlFlow()
                 .addStatement("inflateChildren(parser, root, context, attrs)")
         } else {
             inflateFunBuilder.addStatement(
@@ -116,18 +119,26 @@ object FastInflateLayoutGenerator {
                 genCreateViewFunc(root)
             )
                 .addStatement("var params: %T.LayoutParams? = null", viewGroupClz)
-                .addStatement("if (root != null) {")
+                .beginControlFlow("if (root != null)")
                 .addStatement("params = root.generateLayoutParams(attrs)")
-                .addStatement("if (!attachToRoot) { temp.layoutParams = params }")
-                .addStatement("}")
+                .beginControlFlow("if (!attachToRoot)")
+                .addStatement("temp.layoutParams = params")
+                .endControlFlow()
+                .endControlFlow()
                 .addStatement("inflateChildren(parser, temp, context, attrs)")
-                .addStatement("if (root != null && attachToRoot) { root.addView(temp, params) }")
-                .addStatement("if (root == null || !attachToRoot) { result = temp }")
+                .beginControlFlow("if (root != null && attachToRoot)")
+                .addStatement("root.addView(temp, params)")
+                .endControlFlow()
+                .beginControlFlow("if (root == null || !attachToRoot)")
+                .addStatement("result = temp")
+                .endControlFlow()
         }
 
         inflateFunBuilder
             .addStatement("return result!!")
-            .addStatement("} finally { parser.close() }")
+            .nextControlFlow("finally")
+            .addStatement("parser.close()")
+            .endControlFlow()
 
         return inflateFunBuilder.build()
     }
@@ -200,8 +211,9 @@ object FastInflateLayoutGenerator {
                 .addStatement("%T.consumeChildElements(parser)", helperClz)
         } else if (nodeName == TAG_MERGE) {
             funSpecBuilder.addStatement(
-                "throw %T(\"<merge /> must be the root element\")",
-                fastInflateExceptionClz
+                "throw %T(%S)",
+                fastInflateExceptionClz,
+                "<merge /> must be the root element"
             )
         } else {
             funSpecBuilder.addStatement(
@@ -265,39 +277,42 @@ object FastInflateLayoutGenerator {
                 .addParameter("ignoreThemeAttr", Boolean::class.java)
                 .returns(viewClz)
                 .addStatement("var ctx = context")
-                .addStatement("if (!ignoreThemeAttr) {")
+                .beginControlFlow("if (!ignoreThemeAttr)")
                 .addStatement("val ta = context.obtainStyledAttributes(attrs, ATTRS_THEME)")
                 .addStatement("val themeResId = ta.getResourceId(0, 0)")
-                .addStatement(
-                    "if (themeResId != 0) { ctx = %T(context, themeResId) }",
-                    contextThemeWrapperClz
-                )
-                .addStatement("ta.recycle() }")
-
+                .beginControlFlow("if (themeResId != 0)")
+                .addStatement("ctx = %T(context, themeResId)", contextThemeWrapperClz)
+                .endControlFlow()
+                .addStatement("ta.recycle()")
+                .endControlFlow()
             if (nodeName == TAG_1995) {
                 funSpecBuilder.addStatement("return %T.newBlinkLayout(ctx, attrs)", helperClz)
             } else {
                 funSpecBuilder
                     .addStatement("var view: %T? = null", viewClz)
-                    .addStatement("if (layoutInflater.factory2 != null) {")
+                    .beginControlFlow("if (layoutInflater.factory2 != null)")
                     .addStatement(
-                        "view = layoutInflater.factory2.onCreateView(parent, \"%L\", ctx, attrs)",
+                        "view = layoutInflater.factory2.onCreateView(parent, %S, ctx, attrs)",
                         className
                     )
-                    .addStatement("} else if (layoutInflater.factory != null) {")
+                    .nextControlFlow("else if (layoutInflater.factory != null)")
                     .addStatement(
-                        "view = layoutInflater.factory.onCreateView(\"%L\", ctx, attrs)",
+                        "view = layoutInflater.factory.onCreateView(%S, ctx, attrs)",
                         className
                     )
-                    .addStatement("}")
+                    .endControlFlow()
+                    .beginControlFlow("if (view == null)")
                     .addStatement(
-                        "if (view == null) { view = privateFactory?.onCreateView(\"%L\", ctx, attrs) }",
+                        "view = privateFactory?.onCreateView(%S, ctx, attrs)",
                         className
                     )
-                    .addStatement("if (view == null) { view = $fixedClassName(ctx, attrs) }")
+                    .endControlFlow()
+                    .beginControlFlow("if (view == null)")
+                    .addStatement("view = $fixedClassName(ctx, attrs)")
+                    .endControlFlow()
                     .apply {
-                        if (className == "android.view.ViewStub") {
-                            addStatement("view.layoutInflater = LayoutInflater.from(context)")
+                        if (fixedClassName == "android.view.ViewStub") {
+                            addStatement("(view as? android.view.ViewStub?)?.layoutInflater = layoutInflater.cloneInContext(context)")
                         }
                     }
                     .addStatement("return view")

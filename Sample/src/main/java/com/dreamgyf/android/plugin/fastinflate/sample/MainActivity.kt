@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewStub
 import com.dreamgyf.android.plugin.fastinflate.FastInflate
 
 class MainActivity : AppCompatActivity() {
@@ -41,5 +42,8 @@ class MainActivity : AppCompatActivity() {
         val tagValue = root.getTag(R.id.tag)
 
         assert(tagValue == "#ff000000")
+
+        val viewStub = findViewById<ViewStub>(R.id.view_stub)
+        viewStub.inflate()
     }
 }
