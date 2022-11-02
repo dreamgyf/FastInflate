@@ -2,7 +2,7 @@
 
 ![Android](https://img.shields.io/badge/-Android-brightgreen)
 ![Kotlin](https://img.shields.io/badge/-Kotlin-blueviolet)
-[![version](https://img.shields.io/badge/version-0.1.0--alpha--03-red)](https://github.com/dreamgyf/FastInflate/releases/tag/v0.1.0-alpha-03)
+[![version](https://img.shields.io/github/v/release/dreamgyf/FastInflate.svg?label=version&color=red)](https://github.com/dreamgyf/FastInflate/releases)
 [![stars](https://img.shields.io/github/stars/dreamgyf/FastInflate)](https://github.com/dreamgyf/FastInflate/stargazers)
 [![LICENSE](https://img.shields.io/github/license/dreamgyf/FastInflate)](https://github.com/dreamgyf/FastInflate/blob/master/LICENSE)
 
