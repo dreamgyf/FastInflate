@@ -1,7 +1,5 @@
 <img src="./logo.png" width="66%"/>
 
-# 
-
 ![Android](https://img.shields.io/badge/-Android-brightgreen)
 ![Kotlin](https://img.shields.io/badge/-Kotlin-blueviolet)
 [![version](https://img.shields.io/badge/version-0.1.0--alpha--03-red)](https://github.com/dreamgyf/FastInflate/releases/tag/v0.1.0-alpha-03)
