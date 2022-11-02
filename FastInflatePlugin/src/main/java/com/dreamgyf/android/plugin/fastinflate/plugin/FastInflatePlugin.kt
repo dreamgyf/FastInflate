@@ -7,35 +7,40 @@ import com.android.build.gradle.LibraryPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-val resRegex = "package.+Resources".toRegex()
-
 class FastInflatePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         println("apply plugin FastInflate for project ${project.name}")
 
-        project.tasks.all { task ->
-            val taskName = task.name
-            if (resRegex.containsMatchIn(taskName)) {
-                val flavor = taskName.replace("package", "")
-                    .replace("Resources", "")
-                    .replaceFirstChar { it.lowercase() }
+        val variants = if (project.plugins.hasPlugin(AppPlugin::class.java)) {
+            project.extensions.getByType(AppExtension::class.java).applicationVariants
+        } else if (project.plugins.hasPlugin(LibraryPlugin::class.java)) {
+            project.extensions.getByType(LibraryExtension::class.java).libraryVariants
+        } else {
+            null
+        }
 
+        variants?.all { variant ->
+            val flavor = variant.flavorName
+            val buildType = variant.buildType.name
+            val buildVariant = variant.name
+
+            val capBuildVariant = buildVariant.replaceFirstChar { it.uppercase() }
+            val packageResourcesTaskName = "package${capBuildVariant}Resources"
+            val packageResourcesTask = project.tasks.findByName(packageResourcesTaskName)
+
+            packageResourcesTask?.let { task ->
+                val genTaskName = "generate${capBuildVariant}FastInflateLayouts"
                 val genTaskProvider = project.tasks.register(
-                    "generate${flavor.replaceFirstChar { it.uppercase() }}FastInflateLayouts",
-                    GenerateFastInflateLayoutTask::class.java, flavor
+                    genTaskName,
+                    GenerateFastInflateLayoutTask::class.java,
+                    flavor, buildType, buildVariant
                 )
                 genTaskProvider.get().dependsOn(task)
 
-                if (project.plugins.hasPlugin(AppPlugin::class.java)) {
-                    project.extensions.getByType(AppExtension::class.java).applicationVariants.all {
-                        it.registerJavaGeneratingTask(genTaskProvider, genTaskProvider.get().genDir)
-                    }
-                } else if (project.plugins.hasPlugin(LibraryPlugin::class.java)) {
-                    project.extensions.getByType(LibraryExtension::class.java).libraryVariants.all {
-                        it.registerJavaGeneratingTask(genTaskProvider, genTaskProvider.get().genDir)
-                    }
-                }
+                variant.registerJavaGeneratingTask(genTaskProvider, genTaskProvider.get().genDir)
+
+                println("Resister task $genTaskName for buildVariant: $buildVariant")
             }
         }
     }
