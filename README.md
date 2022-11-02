@@ -1,4 +1,4 @@
-# FastInflate
+![FastInflate](./logo.png)
 
 编译期时解析布局xml文件，将LayoutInflater中的反射实例化转成普通的实例化，以此来提高布局加载的性能
 
