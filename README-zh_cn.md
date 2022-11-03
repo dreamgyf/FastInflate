@@ -6,22 +6,22 @@
 [![stars](https://img.shields.io/github/stars/dreamgyf/FastInflate)](https://github.com/dreamgyf/FastInflate/stargazers)
 [![LICENSE](https://img.shields.io/github/license/dreamgyf/FastInflate)](./LICENSE)
 
-English | [中文](./README-zh_cn.md)
+[English](./README.md) | 中文
 
-**This is an Android plugin, which can improve the performance of layout loading by parsing the layout xml file during the compilation period and converting the reflection instantiation in LayoutInflater into a normal instantiation.**
+**这是一个`Android`插件，通过在编译期时解析布局`xml`文件，将`LayoutInflater`中的反射实例化转成普通的实例化，以此来提高布局加载的性能**
 
-## Get Started
+## 如何使用
 
-### Dependencies
+### 引入依赖
 
-1. Open the `setting.gradle` file, and make sure that the repositories, `gradlePluginPortal` and `mavenCentral`, are configured.
+1. 打开`setting.gradle`文件，确保配置了远程仓库`gradlePluginPortal`和`mavenCentral`
 
 ```groovy
 pluginManagement {
     repositories {
         gradlePluginPortal()
         mavenLocal()
-        // other repository
+        // 其他仓库
     }
 }
 dependencyResolutionManagement {
@@ -29,14 +29,14 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
         mavenLocal()
-        // other repository
+        // 其他仓库
     }
 }
 ```
 
-2. Open the `build.gradle` file of project, and add the `FastInflate` plugin in the `plugins`.
+2. 打开项目`build.gradle`文件，在`plugins`下添加`FastInflate`插件
 
-   **ps：Publish plugins in Gradle plugin portal is slow，you can compile and publish to local maven repository oneself if can not download it.**
+   **注：Gradle plugin portal仓库插件上传发布速度较慢，如果拉取不到相应的依赖插件，可以自行编译并发布到本地`maven`仓库中使用**
 
 ```groovy
 plugins {
@@ -44,7 +44,7 @@ plugins {
 }
 ```
 
-3. Open the `build.gradle` file of module, and add the `FastInflate` plugin in the `plugins`.
+3. 打开模块`build.gradle`文件，在`plugins`下添加`FastInflate`插件
 
 ```groovy
 plugins {
@@ -52,7 +52,7 @@ plugins {
 }
 ```
 
-4. Open the `build.gradle` file of module, and add the `FastInflate` library in the `dependencies`.
+4. 打开模块`build.gradle`文件，在`dependencies`下添加`FastInflate`库依赖
 
 ```groovy
 dependencies {
@@ -60,36 +60,36 @@ dependencies {
 }
 ```
 
-### Usage
+### 代码中使用
 
-Just use `FastInflate` instead `LayoutInflater`.
+使用`FastInflate`替代`LayoutInflater`即可
 
 ```kotlin
 // LayoutInflater.from(this).inflate(R.layout.activity_main, null)
 FastInflate.from(this).inflate(R.layout.activity_main, null)
 ```
 
-## Notice
+## 注意事项
 
-- If you want compile this project, please `clone` the parent project [AndroidLibraries](https://github.com/dreamgyf/AndroidLibraries) directly.
+- 编译此项目请直接`clone`父工程 [AndroidLibraries](https://github.com/dreamgyf/AndroidLibraries)
 
-- Multi-module projects are not supported currently.
+- 目前暂不支持多`module`项目
 
-- Multi-directory of `layout` is not supported currently. (For Example: `layout-v23`)
+- 目前暂不支持多`layout`目录（如`layout-v23`）
 
-- The `<include />` tag doesn't supported to use `theme` attribute.
+- `<include />`标签不支持使用`theme`属性
 
-- The current version is an alpha beta, and have not done compatibility tests for all of the Android versions.
+- 当前版本为`alpha`测试版，尚未对所有`Android`版本进行兼容性测试
 
-- The initialization of the current version of `FastInflate` is slow, this problem will be solved in subsequent versions.
+- 当前版本`FastInflate`初始化较慢，将在后续版本中解决此问题
 
-## Performance test
+## 性能测试
 
-**ps：The following test results are based on `activity_main` layout of this branch.**
+**注：以下测试结果均基于此分支`activity_main`布局**
 
 ### *Pixel 6 pro, Android SDK 33*
 
-- Time consumption of first `inflate` layout（Unit: ms）
+- 同一布局首次`inflate`耗时（单位：ms 毫秒）
 
 | FastInflate | LayoutInflater |
 |-------------|----------------|
@@ -104,13 +104,13 @@ FastInflate.from(this).inflate(R.layout.activity_main, null)
 | 22ms        | 28ms           |
 | 23ms        | 30ms           |
 
-`FastInflate` takes `22.7ms` on average
+`FastInflate`平均耗时`22.7ms`
 
-`LayoutInflater` takes `29ms` on average
+`LayoutInflater`平均耗时`29ms`
 
-Performance improved by about `27.75%`
+性能提升约`27.75%`
 
-- Time consumption of second `inflate` layout（Unit: µs）
+- 同一布局第二次`inflate`耗时（单位：µs 微秒）
 
 | FastInflate | LayoutInflater |
 |-------------|----------------|
@@ -125,13 +125,13 @@ Performance improved by about `27.75%`
 | 1957µs      | 2930µs         |
 | 1888µs      | 2940µs         |
 
-`FastInflate` takes `1924µs` on average
+`FastInflate`平均耗时`1924µs`
 
-`LayoutInflater` takes `2912.6µs` on average
+`LayoutInflater`平均耗时`2912.6µs`
 
-Performance improved by about `51.38%`
+性能提升约`51.38%`
 
-- Time consumption of `inflate` 1000 times for the same layout（单位：ms 毫秒）
+- 同一布局`inflate`1000次耗时（单位：ms 毫秒）
 
 | FastInflate | LayoutInflater |
 |-------------|----------------|
@@ -146,12 +146,12 @@ Performance improved by about `51.38%`
 | 846ms       | 1369ms         |
 | 843ms       | 1344ms         |
 
-`FastInflate` takes `847.3ms` on average
+`FastInflate`平均耗时`847.3ms`
 
-`LayoutInflater` takes `1344.6ms` on average
+`LayoutInflater`平均耗时`1344.6ms`
 
-Performance improved by about `58.69%`
+性能提升约`58.69%`
 
 ## LICENSE
 
-This project uses the [Apache-2.0](./LICENSE) license.
+本项目使用 [Apache-2.0](./LICENSE) 协议
