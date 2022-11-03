@@ -2,6 +2,8 @@
 
 ![Android](https://img.shields.io/badge/-Android-brightgreen)
 ![Kotlin](https://img.shields.io/badge/-Kotlin-blueviolet)
+[![Gradle](https://img.shields.io/badge/-Gradle-01303a)](https://plugins.gradle.org/plugin/com.dreamgyf.android.fastinflate)
+[![Maven](https://img.shields.io/badge/-Maven-5f86eb)](https://search.maven.org/artifact/com.dreamgyf.android.plugin/FastInflate)
 [![version](https://img.shields.io/github/v/release/dreamgyf/FastInflate.svg?label=version&color=red)](https://github.com/dreamgyf/FastInflate/releases)
 [![stars](https://img.shields.io/github/stars/dreamgyf/FastInflate)](https://github.com/dreamgyf/FastInflate/stargazers)
 [![LICENSE](https://img.shields.io/github/license/dreamgyf/FastInflate)](./LICENSE)
@@ -35,8 +37,6 @@ dependencyResolutionManagement {
 ```
 
 2. Open the `build.gradle` file of project, and add the `FastInflate` plugin in the `plugins`.
-
-   **ps：Publish plugins in Gradle plugin portal is slow，you can compile and publish to local maven repository oneself if can not download it.**
 
 ```groovy
 plugins {
@@ -151,6 +151,12 @@ Performance improved by about `51.38%`
 `LayoutInflater` takes `1344.6ms` on average
 
 Performance improved by about `58.69%`
+
+## Repositories
+
+- [Gradle Plugin Portal](https://plugins.gradle.org/plugin/com.dreamgyf.android.fastinflate)
+
+- [Maven Central](https://search.maven.org/artifact/com.dreamgyf.android.plugin/FastInflate)
 
 ## LICENSE
 
