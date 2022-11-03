@@ -2,6 +2,8 @@
 
 ![Android](https://img.shields.io/badge/-Android-brightgreen)
 ![Kotlin](https://img.shields.io/badge/-Kotlin-blueviolet)
+[![Gradle](https://img.shields.io/badge/-Gradle-01303a)](https://plugins.gradle.org/plugin/com.dreamgyf.android.fastinflate)
+[![Maven](https://img.shields.io/badge/-Maven-5f86eb)](https://search.maven.org/artifact/com.dreamgyf.android.plugin/FastInflate)
 [![version](https://img.shields.io/github/v/release/dreamgyf/FastInflate.svg?label=version&color=red)](https://github.com/dreamgyf/FastInflate/releases)
 [![stars](https://img.shields.io/github/stars/dreamgyf/FastInflate)](https://github.com/dreamgyf/FastInflate/stargazers)
 [![LICENSE](https://img.shields.io/github/license/dreamgyf/FastInflate)](./LICENSE)
@@ -35,8 +37,6 @@ dependencyResolutionManagement {
 ```
 
 2. 打开项目`build.gradle`文件，在`plugins`下添加`FastInflate`插件
-
-   **注：Gradle plugin portal仓库插件上传发布速度较慢，如果拉取不到相应的依赖插件，可以自行编译并发布到本地`maven`仓库中使用**
 
 ```groovy
 plugins {
@@ -151,6 +151,12 @@ FastInflate.from(this).inflate(R.layout.activity_main, null)
 `LayoutInflater`平均耗时`1344.6ms`
 
 性能提升约`58.69%`
+
+## 仓库
+
+- [Gradle Plugin Portal](https://plugins.gradle.org/plugin/com.dreamgyf.android.fastinflate)
+
+- [Maven Central](https://search.maven.org/artifact/com.dreamgyf.android.plugin/FastInflate)
 
 ## LICENSE
 
