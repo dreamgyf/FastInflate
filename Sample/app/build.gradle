@@ -1,0 +1,59 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.dreamgyf.android.fastinflate'
+}
+
+android {
+    namespace 'com.dreamgyf.android.plugin.fastinflate.sample'
+    compileSdk configs.android.compileSdk
+
+    defaultConfig {
+        applicationId "com.dreamgyf.android.plugin.fastinflate.sample"
+        minSdk configs.android.minSdk
+        targetSdk configs.android.targetSdk
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    flavorDimensions = ['version', 'channel']
+    productFlavors {
+        version1 {
+            dimension = 'version'
+        }
+        version2 {
+            dimension = 'version'
+        }
+        channel1 {
+            dimension = 'channel'
+        }
+        channel2 {
+            dimension = 'channel'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.android.material
+    implementation libs.androidx.constraintlayout
+
+    implementation 'com.dreamgyf.android.plugin:FastInflate:0.1.0-alpha-03'
+}
