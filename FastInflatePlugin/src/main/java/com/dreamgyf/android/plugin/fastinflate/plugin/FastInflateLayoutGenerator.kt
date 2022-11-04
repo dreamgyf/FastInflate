@@ -1,7 +1,6 @@
 package com.dreamgyf.android.plugin.fastinflate.plugin
 
 import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.jvm.throws
 import groovy.util.Node
 import groovy.xml.XmlParser
 import java.io.File
