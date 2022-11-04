@@ -131,7 +131,7 @@ Performance improved by about `27.75%`
 
 Performance improved by about `51.38%`
 
-- Time consumption of `inflate` 1000 times for the same layout（单位：ms 毫秒）
+- Time consumption of `inflate` 1000 times for the same layout（Unit：ms）
 
 | FastInflate | LayoutInflater |
 |-------------|----------------|
