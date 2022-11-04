@@ -1,59 +1,15 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'com.dreamgyf.android.fastinflate'
+    alias(libs.plugins.android.app) apply false
+    alias(libs.plugins.android.lib) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-03' apply false
 }
 
-android {
-    namespace 'com.dreamgyf.android.plugin.fastinflate.sample'
-    compileSdk configs.android.compileSdk
-
-    defaultConfig {
-        applicationId "com.dreamgyf.android.plugin.fastinflate.sample"
-        minSdk configs.android.minSdk
-        targetSdk configs.android.targetSdk
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    flavorDimensions = ['version', 'channel']
-    productFlavors {
-        version1 {
-            dimension = 'version'
-        }
-        version2 {
-            dimension = 'version'
-        }
-        channel1 {
-            dimension = 'channel'
-        }
-        channel2 {
-            dimension = 'channel'
-        }
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
+if (!file("../../configs.gradle").exists()) {
+    throw new GradleException(
+            "Could not found file \"../../configs.gradle\", " +
+                    "please clone parent project https://github.com/dreamgyf/AndroidLibraries"
+    )
 }
-
-dependencies {
-    implementation libs.androidx.core.ktx
-    implementation libs.androidx.appcompat
-    implementation libs.android.material
-    implementation libs.androidx.constraintlayout
-
-    implementation libs.dreamgyf.FastInflate
-}
+apply from: "../../configs.gradle"
