@@ -24,6 +24,9 @@ if (file.exists()) {
 }
 
 dependencies {
+    implementation localGroovy()
+    implementation gradleApi()
+
     implementation libs.android.gradle.tools
     implementation libs.kotlinpoet
 }
