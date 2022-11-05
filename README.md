@@ -4,6 +4,7 @@
 ![Kotlin](https://img.shields.io/badge/-Kotlin-blueviolet)
 [![Gradle](https://img.shields.io/badge/-Gradle-01303a)](https://plugins.gradle.org/plugin/com.dreamgyf.android.fastinflate)
 [![Maven](https://img.shields.io/badge/-Maven-5f86eb)](https://search.maven.org/artifact/com.dreamgyf.android.plugin/FastInflate)
+[![CI](https://github.com/dreamgyf/FastInflate/actions/workflows/ci.yml/badge.svg)](https://github.com/dreamgyf/FastInflate/actions/workflows/ci.yml)
 [![version](https://img.shields.io/github/v/release/dreamgyf/FastInflate.svg?label=version&color=red)](https://github.com/dreamgyf/FastInflate/releases)
 [![stars](https://img.shields.io/github/stars/dreamgyf/FastInflate)](https://github.com/dreamgyf/FastInflate/stargazers)
 [![LICENSE](https://img.shields.io/github/license/dreamgyf/FastInflate)](./LICENSE)
@@ -40,7 +41,7 @@ dependencyResolutionManagement {
 
 ```groovy
 plugins {
-    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-03' apply false
+    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-04' apply false
 }
 ```
 
@@ -56,7 +57,7 @@ plugins {
 
 ```groovy
 dependencies {
-    implementation 'com.dreamgyf.android.fastinflate:0.1.0-alpha-03'
+    implementation 'com.dreamgyf.android.fastinflate:0.1.0-alpha-04'
 }
 ```
 
@@ -73,15 +74,11 @@ FastInflate.from(this).inflate(R.layout.activity_main, null)
 
 - If you want compile this project, please `clone` the parent project [AndroidLibraries](https://github.com/dreamgyf/AndroidLibraries) directly.
 
-- Multi-module projects are not supported currently.
-
 - Multi-directory of `layout` is not supported currently. (For Example: `layout-v23`)
 
 - The `<include />` tag doesn't supported to use `theme` attribute.
 
 - The current version is an alpha beta, and have not done compatibility tests for all of the Android versions.
-
-- The initialization of the current version of `FastInflate` is slow, this problem will be solved in subsequent versions.
 
 ## Performance test
 
