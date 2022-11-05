@@ -59,8 +59,8 @@ class FastInflate private constructor(private val appContext: Context) {
 
             try {
                 val layoutName = appContext.resources.getResourceEntryName(resource)
-                val clz =
-                    Class.forName("com.dreamgyf.android.plugin.fastinflate.generate.FastInflate_Layout_$layoutName")
+                val className = "${GEN_PACKAGE_NAME}.FastInflate_Layout_$layoutName"
+                val clz = Class.forName(className)
                 val instance = clz.getConstructor(Context::class.java).newInstance(appContext)
                 val inflateMethod = clz.getMethod(
                     "inflate",
@@ -83,6 +83,8 @@ class FastInflate private constructor(private val appContext: Context) {
     }
 
     companion object {
+
+        const val GEN_PACKAGE_NAME = "com.dreamgyf.android.plugin.fastinflate.generate"
 
         private var instance: FastInflate? = null
 

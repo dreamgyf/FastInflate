@@ -1,37 +1,19 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'com.dreamgyf.android.fastinflate'
 }
 
 android {
-    namespace 'com.dreamgyf.android.plugin.fastinflate.sample'
+    namespace 'com.dreamgyf.android.plugin.fastinflate.sample.module1'
     compileSdk configs.android.compileSdk
 
     defaultConfig {
-        applicationId "com.dreamgyf.android.plugin.fastinflate.sample"
         minSdk configs.android.minSdk
         targetSdk configs.android.targetSdk
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    flavorDimensions = ['version', 'channel']
-    productFlavors {
-        version1 {
-            dimension = 'version'
-        }
-        version2 {
-            dimension = 'version'
-        }
-        channel1 {
-            dimension = 'channel'
-        }
-        channel2 {
-            dimension = 'channel'
-        }
+        consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
@@ -47,12 +29,6 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-
-    testOptions {
-        unitTests {
-            includeAndroidResources = true
-        }
-    }
 }
 
 dependencies {
@@ -65,6 +41,4 @@ dependencies {
     testImplementation libs.test.robolectric
 
     implementation 'com.dreamgyf.android.plugin:FastInflate:0.1.0-alpha-04'
-
-    implementation project(':Module1')
 }
