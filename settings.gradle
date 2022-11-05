@@ -33,5 +33,5 @@ include ':FastInflatePlugin'
 
 def includeSample = System.getenv("FASTINFLATE_INCLUDE_SAMPLE")
 if (includeSample != null && includeSample == "true") {
-    includeBuild 'Sample'
+    include ':Sample:app'
 }
