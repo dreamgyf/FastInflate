@@ -13,7 +13,8 @@ import java.lang.reflect.Method
 
 class FastInflate private constructor(private val appContext: Context) {
 
-    private val supportSdk = Build.VERSION.SDK_INT in SUPPORT_SDKS
+    private val supportSdk =
+        Build.VERSION.SDK_INT in Build.VERSION_CODES.LOLLIPOP..Build.VERSION_CODES.TIRAMISU
 
     private val inflateMethodMap = mutableMapOf<Int, Pair<Any, Method>?>()
 
@@ -82,22 +83,6 @@ class FastInflate private constructor(private val appContext: Context) {
     }
 
     companion object {
-
-        private val SUPPORT_SDKS = intArrayOf(
-            Build.VERSION_CODES.LOLLIPOP,
-            Build.VERSION_CODES.LOLLIPOP_MR1,
-            Build.VERSION_CODES.M,
-            Build.VERSION_CODES.N,
-            Build.VERSION_CODES.N_MR1,
-            Build.VERSION_CODES.O,
-            Build.VERSION_CODES.O_MR1,
-            Build.VERSION_CODES.P,
-            Build.VERSION_CODES.Q,
-            Build.VERSION_CODES.R,
-            Build.VERSION_CODES.S,
-            Build.VERSION_CODES.S_V2,
-            Build.VERSION_CODES.TIRAMISU
-        )
 
         private var instance: FastInflate? = null
 
