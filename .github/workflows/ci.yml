@@ -65,10 +65,10 @@ jobs:
           ./gradlew :FastInflate:publishToMavenLocal
 
       - name: Do Unit Test for :Sample:app
-        working-directory: 'AndroidLibraries/FastInflate'
-        env:
-          FASTINFLATE_INCLUDE_SAMPLE: true
-        run: ./gradlew :Sample:app:test
+        working-directory: 'AndroidLibraries/FastInflate/Sample'
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:test
 
       - name: Unit Test Report
         uses: asadmansr/android-test-report-action@v1.2.0
