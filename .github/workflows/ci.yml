@@ -15,8 +15,7 @@ jobs:
 
     steps:
       - name: Clone parent project AndroidLibraries
-        run: |
-          git clone https://github.com/dreamgyf/AndroidLibraries.git
+        run: git clone https://github.com/dreamgyf/AndroidLibraries.git
 
       - name: Clone project FastInflate
         uses: actions/checkout@v3
