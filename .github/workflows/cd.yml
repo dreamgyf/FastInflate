@@ -32,12 +32,7 @@ jobs:
 
       - name: Prepare for Gradle
         working-directory: 'AndroidLibraries/FastInflate'
-        env:
-          GRADLE_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
-        run: |
-          mkdir -p ~/.gradle/
-          echo ${GRADLE_PROPERTIES} > ~/.gradle/gradle.properties
-          chmod +x gradlew
+        run: chmod +x gradlew
 
       - name: Publish FastInflatePlugin to local maven
         working-directory: 'AndroidLibraries/FastInflate'
@@ -88,15 +83,13 @@ jobs:
 
       - name: Prepare for Gradle
         working-directory: 'AndroidLibraries/FastInflate'
-        env:
-          GRADLE_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
-        run: |
-          mkdir -p ~/.gradle/
-          echo ${GRADLE_PROPERTIES} > ~/.gradle/gradle.properties
-          chmod +x gradlew
+        run: chmod +x gradlew
 
       - name: Publish FastInflatePlugin
         working-directory: 'AndroidLibraries/FastInflate'
+        env:
+          GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
+          GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
         run: |
           ./gradlew :FastInflatePlugin:assemble
           ./gradlew :FastInflatePlugin:publishPlugins
