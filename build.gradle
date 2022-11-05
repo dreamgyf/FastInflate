@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.android.lib) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.gradle.publish) apply false
-    alias(libs.plugins.dreamgyf.fastinflate) apply false
 }
 
 if (!file("../configs.gradle").exists()) {

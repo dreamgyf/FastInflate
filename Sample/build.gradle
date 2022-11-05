@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.android.app) apply false
     alias(libs.plugins.android.lib) apply false
     alias(libs.plugins.kotlin.android) apply false
-    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-03' apply false
+    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-04' apply false
 }
 
 if (!file("../../configs.gradle").exists()) {
