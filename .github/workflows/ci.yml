@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  Test_For_FastInflate:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone parent project AndroidLibraries
+        run: |
+          git clone https://github.com/dreamgyf/AndroidLibraries.git
+
+      - name: Clone project FastInflate
+        uses: actions/checkout@v3
+        with:
+          path: 'AndroidLibraries/FastInflate'
+
+      - name: Fetch key file
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.TOKEN_FOR_GITHUB }}
+          repository: 'dreamgyf/key'
+          path: 'key'
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Prepare for Gradle
+        working-directory: 'AndroidLibraries/FastInflate'
+        env:
+          GRADLE_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
+        run: |
+          mkdir -p ~/.gradle/
+          echo ${GRADLE_PROPERTIES} > ~/.gradle/gradle.properties
+          chmod +x gradlew
+
+      - name: Publish FastInflatePlugin to local maven
+        working-directory: 'AndroidLibraries/FastInflate'
+        run: |
+          ./gradlew :FastInflatePlugin:assemble
+          ./gradlew :FastInflatePlugin:publishToMavenLocal
+
+      - name: Publish FastInflate to local maven
+        working-directory: 'AndroidLibraries/FastInflate'
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          SIGNING_PATH: ${{ github.workspace }}/key/dreamgyf_6E5F7FAF_secret.gpg
+        run: |
+          ./gradlew :FastInflate:assemble
+          ./gradlew :FastInflate:publishToMavenLocal
+
+      - name: Do Unit Test for :Sample:app
+        working-directory: 'AndroidLibraries/FastInflate'
+        env:
+          FASTINFLATE_INCLUDE_SAMPLE: true
+        run: ./gradlew :Sample:app:test
+
+      - name: Unit Test Report
+        uses: asadmansr/android-test-report-action@v1.2.0
+        if: ${{ always() }}
