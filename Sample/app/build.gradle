@@ -47,6 +47,12 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -58,5 +64,5 @@ dependencies {
     testImplementation libs.test.junit
     testImplementation libs.test.robolectric
 
-    implementation 'com.dreamgyf.android.plugin:FastInflate:0.1.0-alpha-03'
+    implementation 'com.dreamgyf.android.plugin:FastInflate:0.1.0-alpha-04'
 }
