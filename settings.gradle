@@ -30,8 +30,3 @@ rootProject.name = "FastInflate"
 
 include ':FastInflate'
 include ':FastInflatePlugin'
-
-def includeSample = System.getenv("FASTINFLATE_INCLUDE_SAMPLE")
-if (includeSample != null && includeSample == "true") {
-    include ':Sample:app'
-}
