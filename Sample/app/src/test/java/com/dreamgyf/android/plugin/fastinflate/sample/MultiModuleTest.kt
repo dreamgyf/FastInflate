@@ -11,13 +11,13 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [Build.VERSION_CODES.S_V2])
+@Config(minSdk = Build.VERSION_CODES.LOLLIPOP, maxSdk = Build.VERSION_CODES.TIRAMISU)
 class MultiModuleTest {
+
+    private val appContext = RuntimeEnvironment.getApplication().applicationContext
 
     @Test
     fun test() {
-        val appContext = RuntimeEnvironment.getApplication().applicationContext
-
         val appLayout = FastInflate.from(appContext).inflateForTestOnly(
             com.dreamgyf.android.plugin.fastinflate.sample.R.layout.layout_app,
             null

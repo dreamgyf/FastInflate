@@ -22,11 +22,11 @@ object FastInflateLayoutGenerator {
     private val createViewFuncMap = mutableMapOf<String, FunSpec>()
     private val rGenerateFuncList = mutableListOf<FunSpec>()
 
-    fun generate(layoutName: String, file: File): FileSpec {
+    fun generate(layoutDirName: String, layoutName: String, file: File): FileSpec {
         createViewFuncMap.clear()
         rGenerateFuncList.clear()
 
-        val genName = "FastInflate_Layout_$layoutName"
+        val genName = "FastInflate_${layoutDirName.replace('-', '_')}_${layoutName}"
 
         val root = xmlParser.parse(file)
 

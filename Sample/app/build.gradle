@@ -23,13 +23,7 @@ android {
         version1 {
             dimension = 'version'
         }
-        version2 {
-            dimension = 'version'
-        }
         channel1 {
-            dimension = 'channel'
-        }
-        channel2 {
             dimension = 'channel'
         }
     }
@@ -51,6 +45,9 @@ android {
     testOptions {
         unitTests {
             includeAndroidResources = true
+            all {
+                maxHeapSize = "1G"
+            }
         }
     }
 }
@@ -64,7 +61,7 @@ dependencies {
     testImplementation libs.test.junit
     testImplementation libs.test.robolectric
 
-    implementation 'com.dreamgyf.android.plugin:FastInflate:0.1.0-alpha-04'
+    implementation fastinflate
 
     implementation project(':Module1')
 }

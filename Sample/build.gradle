@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.android.app) apply false
     alias(libs.plugins.android.lib) apply false
     alias(libs.plugins.kotlin.android) apply false
-    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-04' apply false
+    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-05' apply false
 }
 
 if (!file("../../configs.gradle").exists()) {
@@ -13,3 +13,9 @@ if (!file("../../configs.gradle").exists()) {
     )
 }
 apply from: "../../configs.gradle"
+
+def fastinflate = "com.dreamgyf.android.plugin:FastInflate:0.1.0-alpha-05"
+
+allprojects {
+    it.ext.fastinflate = fastinflate
+}

@@ -11,7 +11,7 @@ if (file.exists()) {
         library {
             groupId = 'com.dreamgyf.android.plugin'
             moduleName = 'FastInflate'
-            version = '0.1.0-alpha-04'
+            version = '0.1.0-alpha-05'
             description = '编译期解析布局xml文件，提高布局加载的性能'
             url = 'https://github.com/dreamgyf/FastInflate'
         }
