@@ -41,7 +41,7 @@ dependencyResolutionManagement {
 
 ```groovy
 plugins {
-    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-04' apply false
+    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-05' apply false
 }
 ```
 
@@ -57,7 +57,7 @@ plugins {
 
 ```groovy
 dependencies {
-    implementation 'com.dreamgyf.android.fastinflate:0.1.0-alpha-04'
+    implementation 'com.dreamgyf.android.fastinflate:0.1.0-alpha-05'
 }
 ```
 
@@ -73,8 +73,6 @@ FastInflate.from(this).inflate(R.layout.activity_main, null)
 ## Notice
 
 - If you want compile this project, please `clone` the parent project [AndroidLibraries](https://github.com/dreamgyf/AndroidLibraries) directly.
-
-- Multi-directory of `layout` is not supported currently. (For Example: `layout-v23`)
 
 - The `<include />` tag doesn't supported to use `theme` attribute.
 
