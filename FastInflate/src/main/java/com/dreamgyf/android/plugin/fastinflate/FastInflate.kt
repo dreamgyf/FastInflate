@@ -1,8 +1,10 @@
 package com.dreamgyf.android.plugin.fastinflate
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +19,8 @@ class FastInflate private constructor(private val appContext: Context) {
         Build.VERSION.SDK_INT in Build.VERSION_CODES.LOLLIPOP..Build.VERSION_CODES.TIRAMISU
 
     private val inflateMethodMap = mutableMapOf<Int, Pair<Any, Method>?>()
+
+    private val tempTypedValue = TypedValue()
 
     fun inflate(
         @LayoutRes resource: Int,
@@ -46,6 +50,7 @@ class FastInflate private constructor(private val appContext: Context) {
     }
 
     @Throws(Throwable::class)
+    @SuppressLint("ResourceType")
     private fun forceInflate(
         @LayoutRes resource: Int,
         root: ViewGroup?,
@@ -59,7 +64,15 @@ class FastInflate private constructor(private val appContext: Context) {
 
             try {
                 val layoutName = appContext.resources.getResourceEntryName(resource)
-                val className = "${GEN_PACKAGE_NAME}.FastInflate_Layout_$layoutName"
+                val layoutPath = appContext.resources.getString(resource)
+                val splitFiles = layoutPath.split('/')
+                val layoutDirName = splitFiles[splitFiles.size - 2]
+                val className = "${GEN_PACKAGE_NAME}.FastInflate_${
+                    layoutDirName.replace(
+                        '-',
+                        '_'
+                    )
+                }_${layoutName}"
                 val clz = Class.forName(className)
                 val instance = clz.getConstructor(Context::class.java).newInstance(appContext)
                 val inflateMethod = clz.getMethod(

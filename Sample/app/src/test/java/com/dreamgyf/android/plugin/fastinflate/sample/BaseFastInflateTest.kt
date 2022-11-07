@@ -10,11 +10,13 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [Build.VERSION_CODES.S_V2])
+@Config(minSdk = Build.VERSION_CODES.LOLLIPOP, maxSdk = Build.VERSION_CODES.TIRAMISU)
 class BaseFastInflateTest {
+
+    private val appContext = RuntimeEnvironment.getApplication().applicationContext
+
     @Test
     fun baseTest() {
-        val appContext = RuntimeEnvironment.getApplication().applicationContext
 
         FastInflate.from(appContext).inflateForTestOnly(R.layout.activity_main, null)
     }

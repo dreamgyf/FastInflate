@@ -10,6 +10,9 @@ import javax.inject.Inject
 open class GenerateFastInflateLayoutTask
 @Inject constructor(flavor: String, buildType: String, buildVariant: String) : DefaultTask() {
 
+    private val resDir =
+        File("${project.buildDir}/intermediates/packaged_res/$buildVariant")
+
     private val layoutDir =
         File("${project.buildDir}/intermediates/packaged_res/$buildVariant/layout")
 
@@ -25,30 +28,35 @@ open class GenerateFastInflateLayoutTask
 
     @TaskAction
     fun doTask() {
-        if (!layoutDir.exists() || !layoutDir.isDirectory) {
+        if (!resDir.exists() || !resDir.isDirectory) {
             return
         }
 
-        layoutDir.forEachFiles { file ->
-            val fileName = file.name
+        resDir.listFiles()?.forEach { dir ->
+            val dirName = dir.name
+            if (dir.isDirectory && dirName.startsWith("layout")) {
+                dir.forEachFiles { file ->
+                    val fileName = file.name
 
-            val suffixIndex = fileName.indexOf(".xml")
-            if (suffixIndex == -1) {
-                println("$fileName isn't xml file, skip it.")
-                return@forEachFiles
+                    val suffixIndex = fileName.indexOf(".xml")
+                    if (suffixIndex == -1) {
+                        println("$fileName isn't xml file, skip it.")
+                        return@forEachFiles
+                    }
+
+                    val layoutName = fileName.substring(0, suffixIndex)
+
+                    println("Generating $layoutName...")
+
+                    val genFile = FastInflateLayoutGenerator.generate(dirName, layoutName, file)
+
+                    if (!genDir.exists()) {
+                        genDir.mkdirs()
+                    }
+
+                    genFile.writeTo(genDir)
+                }
             }
-
-            val layoutName = fileName.substring(0, suffixIndex)
-
-            println("Generating $layoutName...")
-
-            val genFile = FastInflateLayoutGenerator.generate(layoutName, file)
-
-            if (!genDir.exists()) {
-                genDir.mkdirs()
-            }
-
-            genFile.writeTo(genDir)
         }
     }
 }
