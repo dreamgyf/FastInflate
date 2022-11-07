@@ -20,8 +20,6 @@ class FastInflate private constructor(private val appContext: Context) {
 
     private val inflateMethodMap = mutableMapOf<Int, Pair<Any, Method>?>()
 
-    private val tempTypedValue = TypedValue()
-
     fun inflate(
         @LayoutRes resource: Int,
         root: ViewGroup?,

@@ -41,7 +41,7 @@ dependencyResolutionManagement {
 
 ```groovy
 plugins {
-    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-04' apply false
+    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-05' apply false
 }
 ```
 
@@ -57,7 +57,7 @@ plugins {
 
 ```groovy
 dependencies {
-    implementation 'com.dreamgyf.android.fastinflate:0.1.0-alpha-04'
+    implementation 'com.dreamgyf.android.fastinflate:0.1.0-alpha-05'
 }
 ```
 
@@ -73,8 +73,6 @@ FastInflate.from(this).inflate(R.layout.activity_main, null)
 ## 注意事项
 
 - 编译此项目请直接`clone`父工程 [AndroidLibraries](https://github.com/dreamgyf/AndroidLibraries)
-
-- 目前暂不支持多`layout`目录（如`layout-v23`）
 
 - `<include />`标签不支持使用`theme`属性
 
