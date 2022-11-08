@@ -13,7 +13,7 @@ if (file.exists()) {
             id = 'com.dreamgyf.android.fastinflate'
             name = 'fastInflate'
             displayName = 'Android FastInflate'
-            version = '0.1.0-alpha-05'
+            version = '0.1.0-alpha-06'
             implementationClass = 'com.dreamgyf.android.plugin.fastinflate.plugin.FastInflatePlugin'
             description = 'Parse the layout xml file at compile time, and convert the reflection instantiation in LayoutInflater into normal instantiation, so as to improve the performance of layout loading.\n' +
                     '编译期时解析布局xml文件，将LayoutInflater中的反射实例化转成普通的实例化，以此来提高布局加载的性能'
