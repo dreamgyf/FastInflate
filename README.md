@@ -41,7 +41,7 @@ dependencyResolutionManagement {
 
 ```groovy
 plugins {
-    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-05' apply false
+    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-06' apply false
 }
 ```
 
@@ -57,7 +57,7 @@ plugins {
 
 ```groovy
 dependencies {
-    implementation 'com.dreamgyf.android.fastinflate:0.1.0-alpha-05'
+    implementation 'com.dreamgyf.android.fastinflate:0.1.0-alpha-06'
 }
 ```
 
