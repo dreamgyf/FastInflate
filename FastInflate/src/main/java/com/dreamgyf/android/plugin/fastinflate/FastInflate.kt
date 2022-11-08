@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +25,7 @@ class FastInflate private constructor(private val appContext: Context) {
         attachToRoot: Boolean = (root != null)
     ): View {
         if (!supportSdk) {
+            Log.e("FastInflate", "Unsupported Android SDK, fall back to LayoutInflater.")
             return LayoutInflater.from(appContext).inflate(resource, root, attachToRoot)
         }
 
