@@ -50,51 +50,52 @@ class FastInflate private constructor(private val context: Context) {
 
     @SuppressLint("ResourceType")
     @Throws(Throwable::class)
-    @Synchronized
     private fun forceInflate(
         @LayoutRes resource: Int,
         root: ViewGroup?,
         attachToRoot: Boolean
     ): View {
-        val resources = context.resources
-        var pair = sInflateMethodMap[resource]
-        if (pair == null) {
-            if (sInflateMethodMap.containsKey(resource)) {
-                throw FastInflateException("Cannot find FastInflate method by this resource.")
-            }
+        synchronized(sInflateMethodMap) {
+            val resources = context.resources
+            var pair = sInflateMethodMap[resource]
+            if (pair == null) {
+                if (sInflateMethodMap.containsKey(resource)) {
+                    throw FastInflateException("Cannot find FastInflate method by this resource.")
+                }
 
-            try {
-                val layoutName = resources.getResourceEntryName(resource)
-                val layoutPath = resources.getString(resource)
-                val splitFiles = layoutPath.split('/')
-                val layoutDirName = splitFiles[splitFiles.size - 2]
-                val className = "${GEN_PACKAGE_NAME}.FastInflate_${
-                    layoutDirName.replace(
-                        '-',
-                        '_'
+                try {
+                    val layoutName = resources.getResourceEntryName(resource)
+                    val layoutPath = resources.getString(resource)
+                    val splitFiles = layoutPath.split('/')
+                    val layoutDirName = splitFiles[splitFiles.size - 2]
+                    val className = "${GEN_PACKAGE_NAME}.FastInflate_${
+                        layoutDirName.replace(
+                            '-',
+                            '_'
+                        )
+                    }_${layoutName}"
+                    val clz = Class.forName(className)
+                    val instance = clz.getConstructor().newInstance()
+                    val inflateMethod = clz.getMethod(
+                        "inflate",
+                        Context::class.java,
+                        Int::class.java,
+                        ViewGroup::class.java,
+                        Boolean::class.java
                     )
-                }_${layoutName}"
-                val clz = Class.forName(className)
-                val instance = clz.getConstructor().newInstance()
-                val inflateMethod = clz.getMethod(
-                    "inflate",
-                    Context::class.java,
-                    Int::class.java,
-                    ViewGroup::class.java,
-                    Boolean::class.java
-                )
-                val inflateInfo = Pair(instance, inflateMethod)
-                sInflateMethodMap[resource] = inflateInfo
-                pair = inflateInfo
-            } catch (_: Throwable) {
-                sInflateMethodMap[resource] = null
-                throw FastInflateException("Cannot find FastInflate method by this resource.")
+                    val inflateInfo = Pair(instance, inflateMethod)
+                    sInflateMethodMap[resource] = inflateInfo
+                    pair = inflateInfo
+                } catch (_: Throwable) {
+                    sInflateMethodMap[resource] = null
+                    throw FastInflateException("Cannot find FastInflate method by this resource.")
+                }
             }
+
+            val (instance: Any, method: Method) = pair
+
+            return method.invoke(instance, context, resource, root, attachToRoot) as View
         }
-
-        val (instance: Any, method: Method) = pair
-
-        return method.invoke(instance, context, resource, root, attachToRoot) as View
     }
 
     companion object {
