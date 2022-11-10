@@ -45,20 +45,13 @@ object FastInflateLayoutGenerator {
             )
         )
             .primaryConstructor(
-                FunSpec.constructorBuilder()
-                    .addParameter("context", contextClz)
-                    .build()
-            )
-            .addProperty(
-                PropertySpec.builder("context", contextClz)
-                    .initializer("context")
-                    .addModifiers(KModifier.PRIVATE)
-                    .build()
+                FunSpec.constructorBuilder().build()
             )
             .addProperty(
                 PropertySpec.builder("layoutInflater", layoutInflaterClz)
-                    .initializer("%T.from(context)", layoutInflaterClz)
+                    .mutable()
                     .addModifiers(KModifier.PRIVATE)
+                    .addModifiers(KModifier.LATEINIT)
                     .build()
             )
             .addProperty(
@@ -86,10 +79,12 @@ object FastInflateLayoutGenerator {
 
     private fun generateInflateFunc(root: Node): FunSpec {
         val inflateFunBuilder = FunSpec.builder("inflate")
+            .addParameter("context", contextClz)
             .addParameter("resource", Int::class.java)
             .addParameter("root", viewGroupClz.copy(nullable = true))
             .addParameter("attachToRoot", Boolean::class.java)
             .returns(viewClz)
+            .addStatement("layoutInflater = %T.from(context)", layoutInflaterClz)
             .addStatement(
                 "privateFactory = %T.getInflaterPrivateFactory(layoutInflater)",
                 helperClz

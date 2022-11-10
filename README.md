@@ -41,7 +41,7 @@ dependencyResolutionManagement {
 
 ```groovy
 plugins {
-    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-06' apply false
+    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-07' apply false
 }
 ```
 
@@ -57,7 +57,7 @@ plugins {
 
 ```groovy
 dependencies {
-    implementation 'com.dreamgyf.android.fastinflate:0.1.0-alpha-06'
+    implementation 'com.dreamgyf.android.fastinflate:0.1.0-alpha-07'
 }
 ```
 
@@ -80,72 +80,9 @@ FastInflate.from(this).inflate(R.layout.activity_main, null)
 
 ## Performance test
 
-**ps：The following test results are based on `activity_main` layout of this branch.**
+After fixing the context problem, the performance drops to the same level as that of the LayoutInflater.
 
-### *Pixel 6 pro, Android SDK 33*
-
-- Time consumption of first `inflate` layout（Unit: ms）
-
-| FastInflate | LayoutInflater |
-|-------------|----------------|
-| 23ms        | 28ms           |
-| 23ms        | 29ms           |
-| 22ms        | 29ms           |
-| 24ms        | 30ms           |
-| 21ms        | 29ms           |
-| 23ms        | 29ms           |
-| 23ms        | 29ms           |
-| 23ms        | 29ms           |
-| 22ms        | 28ms           |
-| 23ms        | 30ms           |
-
-`FastInflate` takes `22.7ms` on average
-
-`LayoutInflater` takes `29ms` on average
-
-Performance improved by about `27.75%`
-
-- Time consumption of second `inflate` layout（Unit: µs）
-
-| FastInflate | LayoutInflater |
-|-------------|----------------|
-| 1895µs      | 2810µs         |
-| 2009µs      | 3223µs         |
-| 1898µs      | 2659µs         |
-| 1904µs      | 2990µs         |
-| 1891µs      | 2767µs         |
-| 1861µs      | 2802µs         |
-| 2051µs      | 3004µs         |
-| 1886µs      | 3001µs         |
-| 1957µs      | 2930µs         |
-| 1888µs      | 2940µs         |
-
-`FastInflate` takes `1924µs` on average
-
-`LayoutInflater` takes `2912.6µs` on average
-
-Performance improved by about `51.38%`
-
-- Time consumption of `inflate` 1000 times for the same layout（Unit：ms）
-
-| FastInflate | LayoutInflater |
-|-------------|----------------|
-| 835ms       | 1318ms         |
-| 848ms       | 1330ms         |
-| 844ms       | 1343ms         |
-| 845ms       | 1338ms         |
-| 848ms       | 1344ms         |
-| 853ms       | 1343ms         |
-| 856ms       | 1354ms         |
-| 855ms       | 1363ms         |
-| 846ms       | 1369ms         |
-| 843ms       | 1344ms         |
-
-`FastInflate` takes `847.3ms` on average
-
-`LayoutInflater` takes `1344.6ms` on average
-
-Performance improved by about `58.69%`
+I'll find ways to improve performance in the future.
 
 ## Repositories
 
