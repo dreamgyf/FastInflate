@@ -41,7 +41,7 @@ dependencyResolutionManagement {
 
 ```groovy
 plugins {
-    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-06' apply false
+    id 'com.dreamgyf.android.fastinflate' version '0.1.0-alpha-07' apply false
 }
 ```
 
@@ -57,7 +57,7 @@ plugins {
 
 ```groovy
 dependencies {
-    implementation 'com.dreamgyf.android.fastinflate:0.1.0-alpha-06'
+    implementation 'com.dreamgyf.android.fastinflate:0.1.0-alpha-07'
 }
 ```
 
@@ -80,72 +80,7 @@ FastInflate.from(this).inflate(R.layout.activity_main, null)
 
 ## 性能测试
 
-**注：以下测试结果均基于此分支`activity_main`布局**
-
-### *Pixel 6 pro, Android SDK 33*
-
-- 同一布局首次`inflate`耗时（单位：ms 毫秒）
-
-| FastInflate | LayoutInflater |
-|-------------|----------------|
-| 23ms        | 28ms           |
-| 23ms        | 29ms           |
-| 22ms        | 29ms           |
-| 24ms        | 30ms           |
-| 21ms        | 29ms           |
-| 23ms        | 29ms           |
-| 23ms        | 29ms           |
-| 23ms        | 29ms           |
-| 22ms        | 28ms           |
-| 23ms        | 30ms           |
-
-`FastInflate`平均耗时`22.7ms`
-
-`LayoutInflater`平均耗时`29ms`
-
-性能提升约`27.75%`
-
-- 同一布局第二次`inflate`耗时（单位：µs 微秒）
-
-| FastInflate | LayoutInflater |
-|-------------|----------------|
-| 1895µs      | 2810µs         |
-| 2009µs      | 3223µs         |
-| 1898µs      | 2659µs         |
-| 1904µs      | 2990µs         |
-| 1891µs      | 2767µs         |
-| 1861µs      | 2802µs         |
-| 2051µs      | 3004µs         |
-| 1886µs      | 3001µs         |
-| 1957µs      | 2930µs         |
-| 1888µs      | 2940µs         |
-
-`FastInflate`平均耗时`1924µs`
-
-`LayoutInflater`平均耗时`2912.6µs`
-
-性能提升约`51.38%`
-
-- 同一布局`inflate`1000次耗时（单位：ms 毫秒）
-
-| FastInflate | LayoutInflater |
-|-------------|----------------|
-| 835ms       | 1318ms         |
-| 848ms       | 1330ms         |
-| 844ms       | 1343ms         |
-| 845ms       | 1338ms         |
-| 848ms       | 1344ms         |
-| 853ms       | 1343ms         |
-| 856ms       | 1354ms         |
-| 855ms       | 1363ms         |
-| 846ms       | 1369ms         |
-| 843ms       | 1344ms         |
-
-`FastInflate`平均耗时`847.3ms`
-
-`LayoutInflater`平均耗时`1344.6ms`
-
-性能提升约`58.69%`
+修复`context`问题后，性能降至和`LayoutInflater`相当的水平，后续想办法再提高性能
 
 ## 仓库
 
