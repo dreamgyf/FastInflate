@@ -3,28 +3,25 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
-def file = new File("${rootDir.parent}/module_publish.gradle")
-if (file.exists()) {
-    apply from: file.absolutePath
+apply from: "../publish.gradle"
 
-    publishModule {
-        library {
-            groupId = 'com.dreamgyf.android.plugin'
-            moduleName = 'FastInflate'
-            version = '0.1.0-alpha-07'
-            description = '编译期解析布局xml文件，提高布局加载的性能'
-            url = 'https://github.com/dreamgyf/FastInflate'
-        }
+publishModule {
+    library {
+        groupId = 'com.dreamgyf.android.plugin'
+        moduleName = 'FastInflate'
+        version = '0.1.0-alpha-07'
+        description = '编译期解析布局xml文件，提高布局加载的性能'
+        url = 'https://github.com/dreamgyf/FastInflate'
     }
 }
 
 android {
     namespace 'com.dreamgyf.android.plugin.fastinflate'
-    compileSdk configs.android.compileSdk
+    compileSdk 33
 
     defaultConfig {
-        minSdk configs.android.minSdk
-        targetSdk configs.android.targetSdk
+        minSdk 21
+        targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -46,5 +43,5 @@ android {
 }
 
 dependencies {
-    implementation libs.androidx.appcompat
+    implementation 'androidx.appcompat:appcompat:1.5.1'
 }

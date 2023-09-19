@@ -6,11 +6,11 @@ plugins {
 
 android {
     namespace 'com.dreamgyf.android.plugin.fastinflate.sample.module1'
-    compileSdk configs.android.compileSdk
+    compileSdk 33
 
     defaultConfig {
-        minSdk configs.android.minSdk
-        targetSdk configs.android.targetSdk
+        minSdk 21
+        targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -32,13 +32,13 @@ android {
 }
 
 dependencies {
-    implementation libs.androidx.core.ktx
-    implementation libs.androidx.appcompat
-    implementation libs.android.material
-    implementation libs.androidx.constraintlayout
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
-    testImplementation libs.test.junit
-    testImplementation libs.test.robolectric
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.robolectric:robolectric:4.9'
 
-    implementation fastinflate
+    implementation "com.dreamgyf.android.plugin:FastInflate:0.1.0-alpha-07"
 }

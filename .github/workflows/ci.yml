@@ -14,13 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clone parent project AndroidLibraries
-        run: git clone https://github.com/dreamgyf/AndroidLibraries.git
-
       - name: Clone project FastInflate
         uses: actions/checkout@v3
         with:
-          path: 'AndroidLibraries/FastInflate'
+          path: 'FastInflate'
 
       - name: Fetch key file
         uses: actions/checkout@v3
@@ -37,17 +34,17 @@ jobs:
           cache: gradle
 
       - name: Prepare for Gradle
-        working-directory: 'AndroidLibraries/FastInflate'
+        working-directory: 'FastInflate'
         run: chmod +x gradlew
 
       - name: Publish FastInflatePlugin to local maven
-        working-directory: 'AndroidLibraries/FastInflate'
+        working-directory: 'FastInflate'
         run: |
           ./gradlew :FastInflatePlugin:assemble
           ./gradlew :FastInflatePlugin:publishToMavenLocal
 
       - name: Publish FastInflate to local maven
-        working-directory: 'AndroidLibraries/FastInflate'
+        working-directory: 'FastInflate'
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
@@ -59,7 +56,7 @@ jobs:
           ./gradlew :FastInflate:publishToMavenLocal
 
       - name: Do Unit Test for :Sample:app
-        working-directory: 'AndroidLibraries/FastInflate/Sample'
+        working-directory: 'FastInflate/Sample'
         run: |
           chmod +x gradlew
           ./gradlew :app:test
