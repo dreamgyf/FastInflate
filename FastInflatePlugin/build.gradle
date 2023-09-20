@@ -3,23 +3,20 @@ plugins {
     id 'groovy'
 }
 
-def file = new File("${rootDir.parent}/module_publish.gradle")
-if (file.exists()) {
-    apply from: file.absolutePath
+apply from: "../publish.gradle"
 
-    publishModule {
-        plugin {
-            group = 'com.dreamgyf.android.plugin'
-            id = 'com.dreamgyf.android.fastinflate'
-            name = 'fastInflate'
-            displayName = 'Android FastInflate'
-            version = '0.1.0-alpha-07'
-            implementationClass = 'com.dreamgyf.android.plugin.fastinflate.plugin.FastInflatePlugin'
-            description = 'Parse the layout xml file at compile time, and convert the reflection instantiation in LayoutInflater into normal instantiation, so as to improve the performance of layout loading.\n' +
-                    '编译期时解析布局xml文件，将LayoutInflater中的反射实例化转成普通的实例化，以此来提高布局加载的性能'
-            url = 'https://github.com/dreamgyf/FastInflate'
-            tags = ['android', 'LayoutInflater']
-        }
+publishModule {
+    plugin {
+        group = 'com.dreamgyf.android.plugin'
+        id = 'com.dreamgyf.android.fastinflate'
+        name = 'fastInflate'
+        displayName = 'Android FastInflate'
+        version = '0.1.0-alpha-07'
+        implementationClass = 'com.dreamgyf.android.plugin.fastinflate.plugin.FastInflatePlugin'
+        description = 'Parse the layout xml file at compile time, and convert the reflection instantiation in LayoutInflater into normal instantiation, so as to improve the performance of layout loading.\n' +
+                '编译期时解析布局xml文件，将LayoutInflater中的反射实例化转成普通的实例化，以此来提高布局加载的性能'
+        url = 'https://github.com/dreamgyf/FastInflate'
+        tags = ['android', 'LayoutInflater']
     }
 }
 
@@ -27,6 +24,6 @@ dependencies {
     implementation localGroovy()
     implementation gradleApi()
 
-    implementation libs.android.gradle.tools
-    implementation libs.kotlinpoet
+    implementation 'com.android.tools.build:gradle:7.3.0'
+    implementation 'com.squareup:kotlinpoet:1.12.0'
 }

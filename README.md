@@ -72,8 +72,6 @@ FastInflate.from(this).inflate(R.layout.activity_main, null)
 
 ## Notice
 
-- If you want compile this project, please `clone` the parent project [AndroidLibraries](https://github.com/dreamgyf/AndroidLibraries) directly.
-
 - The `<include />` tag doesn't supported to use `theme` attribute.
 
 - The current version is an alpha beta, and have not done compatibility tests for all of the Android versions.

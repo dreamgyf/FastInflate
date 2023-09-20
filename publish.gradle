@@ -1,0 +1,242 @@
+def rootProjectDir = rootDir.parent
+
+class PublishModule {
+    Library library
+    Plugin plugin
+
+    void library(Action<Library> action) {
+        library = new Library()
+        action.execute(library)
+    }
+
+    void plugin(Action<Plugin> action) {
+        plugin = new Plugin()
+        action.execute(plugin)
+    }
+}
+
+class Library {
+    String groupId
+    String moduleName
+    String version
+    String description
+    String url
+}
+
+class Plugin {
+    String group
+    String id
+    String name
+    String displayName
+    String version
+    String implementationClass
+    String description
+    String url
+    Collection<String> tags
+}
+
+extensions.create("publishModule", PublishModule)
+
+def mavenFileName = "maven.properties"
+def localFileName = "local.properties"
+
+println "Reading $mavenFileName and $localFileName..."
+
+def mavenProp = new Properties()
+def localProp = new Properties()
+
+def mis
+def lis
+
+try {
+    def mavenFile = new File("${rootDir}/${mavenFileName}")
+    if (mavenFile.exists()) {
+        mis = new FileInputStream(mavenFile)
+        mavenProp.load(mis)
+        println "Success to read $mavenFileName."
+    } else {
+        println "Failed to read $mavenFileName."
+    }
+
+    def localFile = new File("${rootDir}/${localFileName}")
+    if (localFile.exists()) {
+        lis = new FileInputStream(localFile)
+        localProp.load(lis)
+        println "Success to read $localFileName."
+    } else {
+        println "Failed to read $localFileName."
+    }
+
+    def isCI = System.getenv().containsKey('CI')
+
+    if (mavenFile.exists() && (isCI || localFile.exists())) {
+        def snapshotRepoUrl = mavenProp.getProperty('repo.snapshotUrl')
+        def releaseRepoUrl = mavenProp.getProperty('repo.releaseUrl')
+        def licenseName = mavenProp.getProperty('license.name')
+        def licenseUrl = mavenProp.getProperty('license.url')
+        def developerName = mavenProp.getProperty('developer.name')
+        def developerEmail = mavenProp.getProperty('developer.email')
+        def gitRepoUrl = mavenProp.getProperty('git.repoUrl')
+
+        def signingId
+        def signingPassword
+        def signingPath
+        def sonatypeUsername
+        def sonatypePassword
+
+        if (isCI) {
+            println "Is in CI environment."
+
+            signingId = System.getenv('SIGNING_KEY_ID')
+            signingPassword = System.getenv('SIGNING_PASSWORD')
+            signingPath = System.getenv('SIGNING_PATH')
+            sonatypeUsername = System.getenv('SONATYPE_USERNAME')
+            sonatypePassword = System.getenv('SONATYPE_PASSWORD')
+        } else {
+            signingId = localProp.getProperty('signing.keyId')
+            signingPassword = localProp.getProperty('signing.password')
+            signingPath = localProp.getProperty('signing.path')
+            sonatypeUsername = localProp.getProperty('sonatype.username')
+            sonatypePassword = localProp.getProperty('sonatype.password')
+        }
+
+        afterEvaluate {
+            if (publishModule.library != null) {
+                println "Module $name has configuration that can publish to maven."
+
+                apply plugin: 'maven-publish'
+                apply plugin: 'signing'
+
+                ext."signing.keyId" = signingId
+                ext."signing.password" = signingPassword
+                ext."signing.secretKeyRingFile" = signingPath
+
+                task androidSourcesJar(type: Jar) {
+                    archiveClassifier.set('sources')
+                    from android.sourceSets.main.java.source
+                }
+
+                publishing {
+                    repositories {
+                        maven {
+                            name = "AndroidLibraries"
+                            url = version.endsWith('SNAPSHOT') ? snapshotRepoUrl : releaseRepoUrl
+                            println "Maven repo url: $url"
+
+                            credentials {
+                                username sonatypeUsername
+                                password sonatypePassword
+                            }
+                        }
+                    }
+                    publications {
+                        release(MavenPublication) {
+                            groupId = publishModule.library.groupId
+                            artifactId = publishModule.library.moduleName
+                            version = publishModule.library.version
+
+                            def artifactOutputPath = "$buildDir/outputs/aar/${project.getName()}-release.aar"
+                            artifact(artifactOutputPath)
+                            artifact androidSourcesJar
+
+                            println "groupId: $publishModule.library.groupId"
+                            println "artifactId: $publishModule.library.moduleName"
+                            println "version: $publishModule.library.version"
+
+                            pom {
+                                name = publishModule.library.moduleName
+                                description = publishModule.library.description
+                                url = publishModule.library.url
+
+                                println "description: $publishModule.library.description"
+                                println "url: $publishModule.library.url"
+
+                                licenses {
+                                    license {
+                                        name = licenseName
+                                        url = licenseUrl
+                                    }
+                                }
+                                developers {
+                                    developer {
+                                        id = developerName
+                                        name = developerName
+                                        email = developerEmail
+                                    }
+                                }
+                                scm {
+                                    connection = "scm:git:${gitRepoUrl}.git"
+                                    developerConnection = "scm:git:ssh://${gitRepoUrl}.git"
+                                    url = "https://${gitRepoUrl}/tree/master"
+                                }
+                                def api = project.configurations.api.allDependencies
+                                if (!api.isEmpty()) {
+                                    withXml {
+                                        def dependenciesNode = asNode().appendNode('dependencies')
+
+                                        api.each {
+                                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                                            dependencyNode.appendNode('groupId', it.group)
+                                            dependencyNode.appendNode('artifactId', it.name)
+                                            dependencyNode.appendNode('version', it.version)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                signing {
+                    sign publishing.publications
+                }
+            }
+
+            if (publishModule.plugin != null) {
+                println "Module $name has configuration that can publish to gradle plugins."
+
+                apply plugin: 'java-gradle-plugin'
+                apply plugin: 'com.gradle.plugin-publish'
+
+                group = publishModule.plugin.group
+                version = publishModule.plugin.version
+
+                pluginBundle {
+                    website = publishModule.plugin.url
+                    vcsUrl = "${publishModule.plugin.url}.git"
+                    tags = publishModule.plugin.tags
+                }
+
+                gradlePlugin {
+                    plugins {
+                        create(publishModule.plugin.name) {
+                            id = publishModule.plugin.id
+                            displayName = publishModule.plugin.displayName
+                            description = publishModule.plugin.description
+                            implementationClass = publishModule.plugin.implementationClass
+                        }
+                    }
+                }
+
+                println "group: ${publishModule.plugin.group}"
+                println "id: ${publishModule.plugin.id}"
+                println "name: ${publishModule.plugin.name}"
+                println "displayName: ${publishModule.plugin.displayName}"
+                println "version: ${publishModule.plugin.version}"
+                println "description: ${publishModule.plugin.description}"
+                println "url: ${publishModule.plugin.url}"
+                println "tags: ${publishModule.plugin.tags}"
+            }
+        }
+    }
+} catch (Exception e) {
+    println "Failed to read properties."
+    println e
+} finally {
+    if (mis != null) {
+        mis.close()
+    }
+    if (lis != null) {
+        lis.close()
+    }
+}
