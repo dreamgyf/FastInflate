@@ -49,18 +49,22 @@ def mis
 def lis
 
 try {
-    def mavenFile = new File(mavenFileName)
+    def mavenFile = new File("${rootDir}/${mavenFileName}")
     if (mavenFile.exists()) {
         mis = new FileInputStream(mavenFile)
         mavenProp.load(mis)
         println "Success to read $mavenFileName."
+    } else {
+        println "Failed to read $mavenFileName."
     }
 
-    def localFile = new File(localFileName)
+    def localFile = new File("${rootDir}/${localFileName}")
     if (localFile.exists()) {
         lis = new FileInputStream(localFile)
         localProp.load(lis)
         println "Success to read $localFileName."
+    } else {
+        println "Failed to read $localFileName."
     }
 
     def isCI = System.getenv().containsKey('CI')
