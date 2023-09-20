@@ -49,14 +49,14 @@ def mis
 def lis
 
 try {
-    def mavenFile = new File("${rootProjectDir}/${mavenFileName}")
+    def mavenFile = new File(mavenFileName)
     if (mavenFile.exists()) {
         mis = new FileInputStream(mavenFile)
         mavenProp.load(mis)
         println "Success to read $mavenFileName."
     }
 
-    def localFile = new File("${rootProjectDir}/${localFileName}")
+    def localFile = new File(localFileName)
     if (localFile.exists()) {
         lis = new FileInputStream(localFile)
         localProp.load(lis)
